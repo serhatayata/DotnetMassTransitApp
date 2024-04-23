@@ -36,7 +36,13 @@ public class ValuesController : ControllerBase
 
         // 3
 
-        await endpoint.Send<SubmitOrder>(new { OrderId = InVar.Id });
+        await endpoint.Send<SubmitOrder>(new 
+        { 
+            OrderId = InVar.Id,
+            Sku = "Test_sku",
+            Quantity = 10,
+            User = "Serhat"
+        });
 
         return Ok();
     }

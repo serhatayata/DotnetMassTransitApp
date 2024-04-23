@@ -9,6 +9,9 @@ Commands should be expressed in a verb-noun sequence, following the tell style. 
 - UpgradeCustomerAccount
 - SubmitOrder
 
+
+
+
 //////// Events
 
 An event signifies that something has happened. Events are published (using Publish) via either ConsumeContext (within a message consumer), IPublishEndpoint (within a container scope), or IBus (standalone).
@@ -18,6 +21,9 @@ Events should be expressed in a noun-verb (past tense) sequence, indicating that
 - CustomerAddressUpdated
 - CustomerAccountUpgraded
 - OrderSubmitted, OrderAccepted, OrderRejected, OrderShipped
+
+
+
 
 //////// Message Headers
 
@@ -40,6 +46,9 @@ MassTransit encapsulates every sent or published message in a message envelope (
 
 Message headers can be read using the ConsumeContext interface and specified using the SendContext interface.
 
+
+
+
 //////// Message Correlation
 
 Messages are usually part of a conversation and identifiers are used to connect messages to that conversation. In the previous section, the headers supported by MassTransit, including ConversationId, CorrelationId, and InitiatorId, are used to combine separate messages into a conversation. Outbound messages that are published or sent by a consumer will have the same ConversationId as the consumed message. If the consumed message has a CorrelationId, that value will be copied to the InitiatorId. These headers capture the flow of messages involved in the conversation.
@@ -54,6 +63,9 @@ Tracking: The CorrelationId acts as a sort of tracking identifier. It allows you
 
 Error Handling: In case of errors or exceptions occurring during message processing, having a CorrelationId allows you to track down the entire chain of messages that led to the error, making debugging and troubleshooting easier.
 
+
+
+
 //////// Correlation Conventions
 
 CorrelationId can also be set by convention. MassTransit includes several conventions by default, which may be used as the source to initialize the CorrelationId header.
@@ -62,3 +74,50 @@ If the message implements the CorrelatedBy<Guid> interface, which has a Guid Cor
 If the message has a property named CorrelationId, CommandId, or EventId that is a Guid or Guid?, its value will be used.
 If the developer registered a CorrelationId provider for the message type, it will be used get the value.
 
+//////// Saga Correlation
+
+Sagas must have a CorrelationId, it is the primary key used by the saga repository and the way messages are correlated to a specific saga instance. MassTransit follows the conventions above to obtain the CorrelationId used to create a new or load an existing saga instance. Newly created saga instances will be assigned the CorrelationId from the initiating message.
+
+
+
+
+
+//////// Identifiers
+
+MassTransit uses and highly encourages the use of Guid identifiers. Distributed systems would crumble using monotonically incrementing identifiers (such as int or long) due to the bottleneck of locking and incrementing a shared counter. Historically, certain types (okay, we'll call them out - SQL DBAs) have argued against using Guid (or, their term, uniqueidentifier) as a key – a clustered primary key in particular. However, with MassTransit, we solved that problem.
+
+MassTransit uses NewId to generate identifiers that are unique, sequential, and represented as a Guid. The generated identifiers are clustered-index friendly, and are ordered so that SQL Server can efficiently insert them into a database with the uniqueidentifier as the primary key.
+
+To create a Guid, call NewId.NextGuid() where you would otherwise call Guid.NewGuid() and enjoy the benefits of fast, distributed unique identifiers.
+
+
+
+
+//////// Guidance
+
+- When defining message contracts, what follows is general guidance based upon years of using MassTransit combined with continued questions raised by developers new to MassTransit.
+
+- Use records, define properties as public and specify { get; init; } accessors. Create messages using the constructor/object initializer or a message initializer.
+
+- Use interfaces, specify only { get; } accessors. Create messages using message initializers and use the Roslyn Analyzer to identify missing or incompatible properties.
+
+- Limit the use of inheritance, pay attention to polymorphic message routing. A message type containing a dozen interfaces is a bit annoying to untangle if you need to delve deep into message routing to troubleshoot an issue.
+
+- Class inheritance has the same guidance as interfaces, but with more caution.
+
+- Message design is not object-oriented design. Messages should contain state, not behavior. Behavior should be in a separate class or service.
+
+- Consuming a base class type, and expecting polymorphic method behavior almost always leads to problems.
+
+- A big base class may cause pain down the road as changes are made, particularly when supporting multiple message versions.
+
+
+
+
+//////// Message Inheritance
+
+This concept comes up often enough that it warrants its own special section. By design, MassTransit treats your classes, records, and interfaces as a "contract".
+
+If you try and consume a Batch<CoreEvent> and expect to get a variety of types, one of which would be SubmitOrder. In OOP land, that makes all the sense in the world, but in MassTransit contract design it does not. The application has said that it cares about batches of CoreEvent so it will only get back the single property User. This is not a symptom of using System.Text.Json, this has been the standard behavior of MassTransit since day one, even when using Netwonsoft.Json. MassTransit will always respect the contract that has been designed.
+
+If you want to have a standard set of properties available, by all means use a base class, or bundle them up into a single property, our preference. If you want to subscribe to all implementations of class, then you will need to subscribe to all implementations of a class.
