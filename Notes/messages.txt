@@ -1,0 +1,64 @@
+﻿//////// Commands (Generally used for one-to-one)
+
+A command tells a service to do something, and typically a command should only be consumed by a single consumer. If you have a command, such as SubmitOrder, then you should have only one consumer that implements IConsumer<SubmitOrder> or one saga state machine with the Event<SubmitOrder> configured. By maintaining the one-to-one relationship of a command to a consumer, commands may be published and they will be automatically routed to the consumer.
+
+When using RabbitMQ, there is no additional overhead using this approach. However, both Azure Service Bus and Amazon SQS have a more complicated routing structure and because of that structure, additional charges may be incurred since messages need to be forwarded from topics to queues. For low- to medium-volume message loads this isn't a major concern, but for larger high-volume loads it may be preferable to send (using Send) commands directly to the queue to reduce latency and cost.
+Commands should be expressed in a verb-noun sequence, following the tell style. For example:
+
+- UpdateCustomerAddress
+- UpgradeCustomerAccount
+- SubmitOrder
+
+//////// Events
+
+An event signifies that something has happened. Events are published (using Publish) via either ConsumeContext (within a message consumer), IPublishEndpoint (within a container scope), or IBus (standalone).
+
+Events should be expressed in a noun-verb (past tense) sequence, indicating that something happened. Some example event names may include:
+
+- CustomerAddressUpdated
+- CustomerAccountUpgraded
+- OrderSubmitted, OrderAccepted, OrderRejected, OrderShipped
+
+//////// Message Headers
+
+MassTransit encapsulates every sent or published message in a message envelope (described by the Envelope Wrapper pattern). The envelope adds a series of message headers
+
+- MessageId
+- CorrelationId
+- RequestId
+- InitiatorId
+- ConversationId
+- SourceAddress
+- DestinationAddress
+- ResponseAddress
+- FaultAddress
+- ExpirationTime
+- SentTime
+- MessageType
+- Host
+- Headers
+
+Message headers can be read using the ConsumeContext interface and specified using the SendContext interface.
+
+//////// Message Correlation
+
+Messages are usually part of a conversation and identifiers are used to connect messages to that conversation. In the previous section, the headers supported by MassTransit, including ConversationId, CorrelationId, and InitiatorId, are used to combine separate messages into a conversation. Outbound messages that are published or sent by a consumer will have the same ConversationId as the consumed message. If the consumed message has a CorrelationId, that value will be copied to the InitiatorId. These headers capture the flow of messages involved in the conversation.
+
+CorrelationId may be set, when appropriate, by the developer publishing or sending a message. CorrelationId can be set explicitly on the PublishContext or SendContext or when using a message initializer via the __CorrelationId property. The example below shows how either of these methods can be used.
+
+Here's how it works:
+
+Message Correlation: When one message triggers another message or a series of related messages, you can assign the same CorrelationId to all of them. This allows you to identify which messages are related to each other.
+
+Tracking: The CorrelationId acts as a sort of tracking identifier. It allows you to trace the path of a message as it moves through different services or components of your system. For example, if you have a request-response pattern, you can use the CorrelationId to match responses back to the original request.
+
+Error Handling: In case of errors or exceptions occurring during message processing, having a CorrelationId allows you to track down the entire chain of messages that led to the error, making debugging and troubleshooting easier.
+
+//////// Correlation Conventions
+
+CorrelationId can also be set by convention. MassTransit includes several conventions by default, which may be used as the source to initialize the CorrelationId header.
+
+If the message implements the CorrelatedBy<Guid> interface, which has a Guid CorrelationId property, its value will be used.
+If the message has a property named CorrelationId, CommandId, or EventId that is a Guid or Guid?, its value will be used.
+If the developer registered a CorrelationId provider for the message type, it will be used get the value.
+
