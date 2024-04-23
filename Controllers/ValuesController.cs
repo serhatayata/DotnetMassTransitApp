@@ -1,4 +1,4 @@
-﻿using DotnetMassTransitApp.Commands;
+﻿using DotnetMassTransitApp.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 

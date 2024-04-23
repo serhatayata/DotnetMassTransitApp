@@ -1,0 +1,46 @@
+﻿//////// Consumers
+
+Consumer is a widely used noun for something that consumes something. In MassTransit, a consumer consumes one or more message types when configured on or connected to a receive endpoint. 
+
+MassTransit includes many consumer types, including consumers, sagas, saga state machines, routing slip activities, handlers, and job consumers.
+
+
+
+//////// Message Consumers
+
+A message consumer, the most common consumer type, is a class that consumes one or more messages types. For each message type, the class implements IConsumer<TMessage> and the Consume method.
+
+Messages must be reference types, either a record, interface, or class.
+
+
+In MassTransit, the UsingInMemory method is used to configure an in-memory message transport for communication between 
+components within the same process. It's particularly useful for testing scenarios or when you want to run your application 
+without connecting to an external message broker like RabbitMQ or Azure Service Bus.
+
+Automatic receive endpoint configuration by calling ConfigureEndpoints is highly recommended. Several optional configuration 
+options can be used to change the default conventions and customize endpoints, covered in the configuration section.
+
+MassTransit embraces The Hollywood Principle, "Don't call us, we'll call you." Control flows from MassTransit to the 
+developer's code in response to an event, which in this case is the delivery of a message by the transport. This behavior is 
+similar to ASP.NET which creates controllers and invokes action methods on receipt of an HTTP request. When a message is 
+delivered from the transport on a receive endpoint and the message type is consumed by the consumer, MassTransit creates a 
+container scope, resolves a consumer instance, and executes the Consume method passing a ConsumeContext containing the message.
+
+The Consume method returns a Task that is awaited by MassTransit. While the consumer method is executing, the message is 
+unavailable to other receive endpoints. If the Task completes successfully, the message is acknowledged and removed from the queue.
+
+If the Task faults in the event of an exception, or is canceled (explicitly, or via an OperationCanceledException), the 
+consumer instance is released and the exception is propagated back up the pipeline. If the exception does not trigger a retry, 
+the default pipeline will move the message to an error queue.
+
+When a consumer is configured on a receive endpoint, the consumer message types (one for each IConsumer<T>) are used to 
+configure the receive endpoint's consume topology. The consume topology is then used to configure the broker so that 
+published messages are delivered to the queue. The broker topology varies by transport. For example, the RabbitMQ example 
+above would result in the creation of an exchange for the SubmitOrder message type and a binding from the exchange to an 
+exchange with the same name as the queue (the latter exchange then being bound directly to the queue).
+
+If the queue is persistent (AutoDelete is false, which is the default), the topology remains in place even after the bus 
+has stopped. When the bus is recreated and started, the broker entities are reconfigured to ensure they are properly configured. 
+Any messages waiting in the queue will continue to be delivered to the receive endpoint once the bus is started.
+
+

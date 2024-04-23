@@ -1,4 +1,4 @@
-﻿namespace DotnetMassTransitApp.Commands;
+﻿namespace DotnetMassTransitApp.Contracts;
 
 public record SubmitOrder : CoreEvent
 {

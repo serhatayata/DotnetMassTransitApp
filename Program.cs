@@ -1,4 +1,4 @@
-using DotnetMassTransitApp.Commands;
+using DotnetMassTransitApp.Contracts;
 using DotnetMassTransitApp.Models;
 using MassTransit;
 
