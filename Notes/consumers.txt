@@ -67,6 +67,9 @@ time, making it an optimal batch size. It is best to experiment and see what wor
 Consumer definitions are used to specify the behavior of consumers so that they can be automatically configured. Definitions 
 may be explicitly added by AddConsumer or discovered automatically using any of the AddConsumers methods.
 
+
+//////// Skipped Messages
+
 When a consumer is removed (or disconnected) from a receive endpoint, a message type is removed from a consumer, or if a message 
 is mistakenly sent to a receive endpoint, messages may be delivered to the receive endpoint that do not have a consumer.
 
