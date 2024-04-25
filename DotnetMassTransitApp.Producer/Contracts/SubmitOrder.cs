@@ -1,6 +1,6 @@
-﻿namespace DotnetMassTransitApp.Contracts;
+﻿namespace DotnetMassTransitApp.Producer.Contracts;
 
-public record SubmitOrder : CoreEvent
+public class SubmitOrder
 {
     public Guid OrderId { get; set; }
     public string Sku { get; init; }
