@@ -66,3 +66,13 @@ exchange and the queue would be created if either did not exist. This short synt
 host, port, and virtual host of the broker, only the queue and/or exchange details are required.
 
 
+//////// Address Conventions
+
+Using send endpoints might seem too verbose, because before sending any message, you need to get the send endpoint and to 
+do that you need to have an endpoint address. Usually, addresses are kept in the configuration and accessing the 
+configuration from all over the application is not a good practice.
+
+Endpoint conventions solve this issue by allowing you to configure the mapping between message types and endpoint addresses. 
+A potential downside here that you will not be able to send messages of the same type to different endpoints by using 
+conventions. If you need to do this, keep using the GetSendEndpoint method.
+

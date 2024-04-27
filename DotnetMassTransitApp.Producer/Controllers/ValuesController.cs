@@ -43,4 +43,29 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("address-conventions")]
+    public async Task<IActionResult> AddressConventionsMethod()
+    {
+        try
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            using var source = new CancellationTokenSource(timeout);
+
+            await _sendEndpointProvider.Send(
+            new SubmitOrder
+            {
+                OrderId = Guid.NewGuid(),
+                Sku = "sku-sample",
+                Quantity = 10,
+                User = "Serhat"
+            }, source.Token);
+
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
 }

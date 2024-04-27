@@ -24,6 +24,8 @@ builder.Services.AddMassTransit(mt =>
                 c.Password(queueSettings.Password);
             });
 
+            EndpointConvention.Map<SubmitOrder>(new Uri("rabbitmq://localhost/submit-order-queue-third"));
+
             cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
         }));
 });
