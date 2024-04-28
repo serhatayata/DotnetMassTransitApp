@@ -1,5 +1,5 @@
-﻿using DotnetMassTransitApp.Consumer.Contracts;
-using MassTransit;
+﻿using MassTransit;
+using Shared.Queue.Contracts;
 
 namespace DotnetMassTransitApp.Consumer.Consumers;
 

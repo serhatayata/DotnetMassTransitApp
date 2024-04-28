@@ -1,6 +1,6 @@
-﻿using DotnetMassTransitApp.Contracts;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Queue.Contracts;
 
 namespace DotnetMassTransitApp.Controllers;
 
@@ -18,7 +18,7 @@ public class ValuesController : ControllerBase
     [HttpGet("message-correlation")]
     public async Task<IActionResult> MessageCorrelationMethod()
     {
-        var orderId = Guid.NewGuid();
+        var orderId = "112233";
         //MessageCorrelation.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:submit-order"));
@@ -38,10 +38,7 @@ public class ValuesController : ControllerBase
 
         await endpoint.Send<SubmitOrder>(new 
         { 
-            OrderId = InVar.Id,
-            Sku = "Test_sku",
-            Quantity = 10,
-            User = "Serhat"
+            OrderId = InVar.Id
         });
 
         return Ok();

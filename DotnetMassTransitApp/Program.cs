@@ -1,6 +1,6 @@
-using DotnetMassTransitApp.Contracts;
 using DotnetMassTransitApp.Models;
 using MassTransit;
+using Shared.Queue.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -14,18 +14,17 @@ builder.Services.Configure<QueueSettings>("QueueSettings", configuration);
 builder.Services.AddMassTransit(mt =>
 {
     mt.SetKebabCaseEndpointNameFormatter();
-    mt.AddMassTransit(mts =>
-        mts.UsingRabbitMq((cntx, cfg) =>
+    mt.UsingRabbitMq((cntx, cfg) =>
+    {
+        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+        cfg.Host(queueSettings.Uri, c =>
         {
-            var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
-            cfg.Host(queueSettings.Uri, c =>
-            {
-                c.Username(queueSettings.Username);
-                c.Password(queueSettings.Password);
-            });
+            c.Username(queueSettings.Username);
+            c.Password(queueSettings.Password);
+        });
 
-            cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
-        }));
+        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => Guid.Parse(x.OrderId));
+    });
 });
 
 var app = builder.Build();

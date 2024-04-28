@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddLogging(s => s.AddConsole().AddDebug());
 
-builder.Services.AddScoped<SubmitOrderConsumer>();
+builder.Services.AddScoped<IOrderSubmitter, OrderSubmitter>();
 
 builder.Services.AddMassTransit(mt =>
 {
@@ -20,21 +20,24 @@ builder.Services.AddMassTransit(mt =>
 
     mt.AddConsumer<SubmitOrderConsumer>();
 
-    mt.AddMassTransit(mts =>
-        mts.UsingRabbitMq((cntx, cfg) =>
-        {    
-            var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
-            cfg.Host(queueSettings.Uri, c =>
-            {
-                c.Username(queueSettings.Username);
-                c.Password(queueSettings.Password);
-            });
+    mt.UsingRabbitMq((cntx, cfg) =>
+    {
+        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+        //cfg.Host(queueSettings.Uri, c =>
+        //{
+        //    c.Username(queueSettings.Username);
+        //    c.Password(queueSettings.Password);
+        //});
 
-            cfg.ReceiveEndpoint("submit-order", ep =>
-            {
-                ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
-            });
-        }));
+        cfg.Host(host: queueSettings.Host);
+
+        EndpointConvention.Map<StartDelivery>(new Uri(configuration.GetSection("deliveryServiceQueue").Value));
+
+        cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
+        {
+            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        });
+    });
 });
 
 var app = builder.Build();

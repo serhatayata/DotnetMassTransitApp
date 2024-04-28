@@ -1,6 +1,6 @@
-﻿using DotnetMassTransitApp.Producer.Contracts;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Queue.Contracts;
 
 namespace DotnetMassTransitApp.Producer.Controllers;
 
@@ -33,10 +33,7 @@ public class ValuesController : ControllerBase
 
             await endpoint.Send(new SubmitOrder
             {
-                OrderId = Guid.NewGuid(),
-                Sku = "sku-sample",
-                Quantity = 10,
-                User = "Serhat"
+                OrderId = "112233"
             }, source.Token);
 
             return Ok();
@@ -52,17 +49,11 @@ public class ValuesController : ControllerBase
     {
         try
         {
-            var timeout = TimeSpan.FromSeconds(5);
-            using var source = new CancellationTokenSource(timeout);
-
             await _sendEndpointProvider.Send(
             new SubmitOrder
             {
-                OrderId = Guid.NewGuid(),
-                Sku = "sku-sample",
-                Quantity = 10,
-                User = "Serhat"
-            }, source.Token);
+                OrderId = "112233"
+            });
 
             return Ok();
         }
@@ -83,10 +74,7 @@ public class ValuesController : ControllerBase
             await _bus.Send(
             new SubmitOrder
             {
-                OrderId = Guid.NewGuid(),
-                Sku = "sku-sample",
-                Quantity = 10,
-                User = "Serhat"
+                OrderId = "112233"
             }, source.Token);
 
             return Ok();
