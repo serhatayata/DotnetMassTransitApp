@@ -1,6 +1,8 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
+using Shared.Queue.Requests;
+using Shared.Queue.Responses;
 
 namespace DotnetMassTransitApp.Producer.Controllers;
 
@@ -8,15 +10,18 @@ namespace DotnetMassTransitApp.Producer.Controllers;
 [ApiController]
 public class ValuesController : ControllerBase
 {
+    private readonly IRequestClient<FinalizeOrderRequest> _finalizeOrderRequestClient;
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
 
     public ValuesController(
         ISendEndpointProvider sendEndpointProvider,
-        IBus bus)
+        IBus bus,
+        IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient)
     {
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
+        _finalizeOrderRequestClient = finalizeOrderRequestClient;
     }
 
     [HttpGet("send-endpoint")]
@@ -84,4 +89,33 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("header")]
+    public async Task<IActionResult> HeaderMethod()
+    {
+        try
+        {
+            //actually, that's a bad example since the request client already sets the message expiration, but you, get,
+            //the, point.
+
+            var zipkinTraceId = Guid.NewGuid();
+            var zipkinSpanId = Guid.NewGuid();
+
+            var response = await _finalizeOrderRequestClient.GetResponse<FinalizeOrderResponse>(new
+            {
+                __TimeToLive = 15000, // 15 seconds, or in this case, 15000 milliseconds
+                __Header_X_B3_TraceId = zipkinTraceId,
+                __Header_X_B3_SpanId = zipkinSpanId,
+                OrderId = Guid.NewGuid(),
+            });
+
+            return Ok(response);
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
+
+
 }

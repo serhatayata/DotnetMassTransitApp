@@ -76,3 +76,58 @@ Endpoint conventions solve this issue by allowing you to configure the mapping b
 A potential downside here that you will not be able to send messages of the same type to different endpoints by using 
 conventions. If you need to do this, keep using the GetSendEndpoint method.
 
+//////// Publish
+
+Messages are published similarly to how messages are sent, but in this case, a single IPublishEndpoint is used. The same rules 
+for endpoints apply, the closest instance of the publish endpoint should be used. So the ConsumeContext for consumers, and 
+IBus for applications that are published outside of a consumer context.
+
+In MassTransit, Publish follows the publish subscribe messaging pattern. For each message published, a copy of the message 
+is delivered to each subscriber. The mechanism by which this happens is implemented by the message transport, but semantically 
+the operation is the same regardless of which transport is used.
+
+The same guidelines apply for publishing messages, the closest object should be used.
+
+- The ConsumeContext of the message being consumed
+  This ensures that the correlation headers, message headers, and trace information is propagated to the published message.
+
+- An IPublishEndpoint instance
+  This may be passed as an argument, but is typically specified on the constructor of an object that is resolved using a 
+  dependency injection container.
+
+- The IBus
+  The last resort, and should only be used for messages that are being published by an initiator — a process that is initiating 
+  a business process.
+
+//////// Message Initialization
+
+Messages can be initialized by MassTransit using an anonymous object passed as an object to the publish or send methods. 
+While originally designed to support the initialization of interface-based message types, anonymous objects can also be used 
+to initialize message types defined using classes or records.
+
+- Object Properties
+
+The anonymous object properties are matched by name and there is an extensive set of type conversions that may be used to match 
+the types defined by the interface. Most numeric, string, and date/time conversions are supported, as well as several 
+advanced conversions (including variables, and asynchronous Task<T> results).
+
+Collections, including arrays, lists, and dictionaries, are broadly supported, including the conversion of list elements, as well 
+as dictionary keys and values. For instance, a dictionary of (int,decimal) could be converted on the fly to (long, string) using 
+the default format conversions.
+
+Nested objects are also supported, for instance, if a property was of type Address and another anonymous object was created (or 
+any type whose property names match the names of the properties on the message contract), those properties would be set on 
+the message contract.
+
+
+//////// Interface Messages
+
+MassTransit supports interface message types and there are convenience methods to initialize the interface without requiring 
+the creation of a class implementing the interface.
+
+
+//////// Headers
+
+Header values can be specified in the anonymous object using a double-underscore (pronounced 'dunder' apparently) property 
+name. For instance, to set the message time-to-live, specify a property with the duration. Remember, any value that can 
+be converted to a TimeSpan works!

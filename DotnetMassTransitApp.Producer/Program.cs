@@ -1,6 +1,7 @@
 using DotnetMassTransitApp.Producer.Models;
 using MassTransit;
 using Shared.Queue.Contracts;
+using Shared.Queue.Requests;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -24,6 +25,7 @@ builder.Services.AddMassTransit(mt =>
         });
 
         EndpointConvention.Map<SubmitOrder>(new Uri("rabbitmq://localhost/submit-order"));
+        EndpointConvention.Map<FinalizeOrderRequest>(new Uri("rabbitmq://localhost/finalize-order-request"));
 
         //cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
     });

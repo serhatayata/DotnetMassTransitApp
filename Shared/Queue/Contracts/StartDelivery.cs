@@ -1,4 +1,4 @@
-﻿namespace DotnetMassTransitApp.Consumer.Contracts;
+﻿namespace Shared.Queue.Contracts;
 
 public class StartDelivery
 {

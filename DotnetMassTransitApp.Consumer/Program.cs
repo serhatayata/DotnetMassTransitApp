@@ -1,7 +1,7 @@
 using DotnetMassTransitApp.Consumer.Consumers;
-using DotnetMassTransitApp.Consumer.Contracts;
 using DotnetMassTransitApp.Consumer.Models;
 using MassTransit;
+using Shared.Queue.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -19,6 +19,7 @@ builder.Services.AddMassTransit(mt =>
     mt.SetKebabCaseEndpointNameFormatter();
 
     mt.AddConsumer<SubmitOrderConsumer>();
+    mt.AddConsumer<FinalizeOrderConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -36,6 +37,11 @@ builder.Services.AddMassTransit(mt =>
         cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
         {
             ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        });
+
+        cfg.ReceiveEndpoint(queueName: "finalize-order-request", ep =>
+        {
+            ep.ConfigureConsumer<FinalizeOrderConsumer>(cntx);
         });
     });
 });

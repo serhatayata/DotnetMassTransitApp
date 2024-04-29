@@ -1,8 +1,8 @@
-﻿using DotnetMassTransitApp.Consumer.Contracts;
-using DotnetMassTransitApp.Consumer.Events;
-using DotnetMassTransitApp.Consumer.Models;
+﻿using DotnetMassTransitApp.Consumer.Models;
 using MassTransit;
+using MassTransit.Clients;
 using Shared.Queue.Contracts;
+using Shared.Queue.Events;
 
 namespace DotnetMassTransitApp.Consumer.Consumers;
 
@@ -10,7 +10,8 @@ public class SubmitOrderConsumer : IConsumer<SubmitOrder>
 {
     private readonly IOrderSubmitter _orderSubmitter;
 
-    public SubmitOrderConsumer(IOrderSubmitter orderSubmitter)
+    public SubmitOrderConsumer(
+        IOrderSubmitter orderSubmitter)
     {
         _orderSubmitter = orderSubmitter;
     }
@@ -23,7 +24,8 @@ public class SubmitOrderConsumer : IConsumer<SubmitOrder>
 
         await context.Publish<OrderSubmitted>(new
         {
-            context.Message
+            OrderId = context.Message.OrderId,
+            OrderDate = DateTime.Now
         });
     }
 }
