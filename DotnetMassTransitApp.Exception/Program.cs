@@ -15,6 +15,7 @@ builder.Services.AddMassTransit(mt =>
     mt.SetKebabCaseEndpointNameFormatter();
 
     mt.AddConsumer<SendNotificationOrderConsumer>();
+    mt.AddConsumer<SendNotificationOrderFaultConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -25,21 +26,21 @@ builder.Services.AddMassTransit(mt =>
         // if the initial 5 immediate retries fail (the database is really, really down), the message will retry an
         // additional three times after 5, 15, and 30 minutes. This could mean a total of 15 retry attempts (on top of
         // the initial 4 attempts prior to the retry/redelivery filters taking control).
-        cfg.UseDelayedRedelivery(r =>
-        {
-            r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
-        });
+        //cfg.UseDelayedRedelivery(r =>
+        //{
+        //    r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
+        //});
 
-        cfg.UseMessageRetry(r => r.Immediate(5));
+        //cfg.UseMessageRetry(r => r.Immediate(5));
 
         cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
         {
             ep.ConfigureConsumer<SendNotificationOrderConsumer>(cntx, c =>
             {
-                c.UseDelayedRedelivery(r =>
-                {
-                    r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
-                });
+                //c.UseDelayedRedelivery(r =>
+                //{
+                //    r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
+                //});
 
                 c.UseMessageRetry(r =>
                 {
@@ -50,17 +51,19 @@ builder.Services.AddMassTransit(mt =>
             });
 
             // global message retry settings for this queue
-            ep.UseMessageRetry(r =>
-            {
-                r.Immediate(3);
-                r.Handle<NotImplementedException>();
-                r.Handle<ArgumentNullException>();
-                r.Ignore(typeof(InvalidOperationException), typeof(InvalidCastException));
-                r.Ignore<ArgumentException>(t => t.ParamName == "orderTotal");
-            });
+            //ep.UseMessageRetry(r =>
+            //{
+            //    r.Immediate(3);
+            //    r.Handle<NotImplementedException>();
+            //    r.Handle<ArgumentNullException>();
+            //    r.Ignore(typeof(InvalidOperationException), typeof(InvalidCastException));
+            //    r.Ignore<ArgumentException>(t => t.ParamName == "orderTotal");
+            //});
         });
 
         cfg.UseInMemoryOutbox(cntx);
+
+        cfg.ConfigureEndpoints(cntx);
     });
 });
 

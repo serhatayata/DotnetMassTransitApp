@@ -65,3 +65,20 @@ If there are multiple consumers (or saga) on the same endpoint (which could pote
 the retry/redelivery behavior should only apply to a specific consumer or saga, the same configuration can be 
 applied specifically to the consumer or saga.
 
+//////// Faults
+
+MassTransit delivers messages to consumers by calling the Consume method. When a message consumer throws an exception instead 
+of returning normally, a Fault<T> is produced, which may be published or sent depending upon the context.
+
+A Fault<T> is a generic message contract including the original message that caused the consumer to fail, as well as 
+the ExceptionInfo, HostInfo, and the time of the exception.
+
+If the message headers specify a FaultAddress, the fault is sent directly to that address. If the FaultAddress is not 
+present, but a ResponseAddress is specified, the fault is sent to the response address. Otherwise, the fault is 
+published, allowing any subscribed consumers to receive it.
+
+//////// Consuming Faults
+
+Developers may want to do something with faults, such as updating an operational dashboard. To observe faults separate of 
+the consumer that caused the fault to be produced, a consumer can consume fault messages the same as any other message.
+
