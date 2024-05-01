@@ -6,12 +6,12 @@ public class StartDelivery
     {
     }
 
-    public StartDelivery(string orderId, DateTime creationTime)
+    public StartDelivery(Guid orderId, DateTime creationTime)
     {
         this.OrderId = orderId;
         this.CreationTime = creationTime;
     }
 
-    public string OrderId { get; set; }
+    public Guid OrderId { get; set; }
     public DateTime CreationTime { get; set; }
 }

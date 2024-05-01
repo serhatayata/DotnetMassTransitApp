@@ -38,7 +38,7 @@ public class ValuesController : ControllerBase
 
             await endpoint.Send(new SubmitOrder
             {
-                OrderId = "112233"
+                OrderId = Guid.NewGuid()
             }, source.Token);
 
             return Ok();
@@ -57,7 +57,7 @@ public class ValuesController : ControllerBase
             await _sendEndpointProvider.Send(
             new SubmitOrder
             {
-                OrderId = "112233"
+                OrderId = Guid.NewGuid()
             });
 
             return Ok();
@@ -79,7 +79,7 @@ public class ValuesController : ControllerBase
             await _bus.Send(
             new SubmitOrder
             {
-                OrderId = "112233"
+                OrderId = Guid.NewGuid()
             }, source.Token);
 
             return Ok();
@@ -117,5 +117,30 @@ public class ValuesController : ControllerBase
         }
     }
 
+    [HttpGet("variables")]
+    public async Task<IActionResult> VariablesMethod()
+    {
+        try
+        {
+            await _sendEndpointProvider.Send(
+            new SubmitOrder
+            {
+                OrderId = InVar.Id,
+                OrderDate = InVar.Timestamp,
+                OrderNumber = "18001",
+                OrderAmount = 123.45m,
+                OrderItems = new OrderItem[]
+                {
+                    new OrderItem { OrderId = InVar.Id, ItemNumber = "237" },
+                    new OrderItem { OrderId = InVar.Id, ItemNumber = "762" }
+                }
+            });
 
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
 }

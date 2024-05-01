@@ -25,9 +25,10 @@ builder.Services.AddMassTransit(mt =>
         });
 
         EndpointConvention.Map<SubmitOrder>(new Uri("rabbitmq://localhost/submit-order"));
+        EndpointConvention.Map<StartDelivery>(new Uri("rabbitmq://localhost/start-delivery"));
         EndpointConvention.Map<FinalizeOrderRequest>(new Uri("rabbitmq://localhost/finalize-order-request"));
 
-        //cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
+        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
     });
 });
 

@@ -131,3 +131,18 @@ the creation of a class implementing the interface.
 Header values can be specified in the anonymous object using a double-underscore (pronounced 'dunder' apparently) property 
 name. For instance, to set the message time-to-live, specify a property with the duration. Remember, any value that can 
 be converted to a TimeSpan works!
+
+
+//////// Variables
+
+MassTransit also supports variables, which are special types added to the anonymous object. Following the example above, 
+the initialization could be changed to use variables for the OrderId and OrderDate. Variables are consistent throughout the 
+message creation, using the same variable multiple times returns the value. For instance, the Id created to set the OrderId would 
+be the same used to set the OrderId in each item.
+
+
+//////// Async Properties
+
+Message initializers are asynchronous which makes it possible to do some pretty cool things, including waiting for Task 
+input properties to complete and use the result to initialize the property. An example is shown below.
+

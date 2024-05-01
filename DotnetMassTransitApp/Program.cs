@@ -23,7 +23,7 @@ builder.Services.AddMassTransit(mt =>
             c.Password(queueSettings.Password);
         });
 
-        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => Guid.Parse(x.OrderId));
+        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
     });
 });
 
