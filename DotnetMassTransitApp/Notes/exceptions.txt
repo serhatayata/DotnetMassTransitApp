@@ -29,3 +29,19 @@ Both methods have two signatures:
 - Generic version Handle<T> and Ignore<T> where T must be derivate of System.Exception. With no argument, all exceptions of specified type will be either handled or ignored. You can also specify a function argument that will filter exceptions further based on other parameters.
 - Non-generic version that needs one or more exception types as parameters. No further filtering is possible if this version is used.
 
+//////// Redelivery
+
+Some errors take a while to resolve, say a remote service is down or a SQL server has crashed. In these situations, it's best 
+to dust off and nuke the site from orbit - at a much later time obviously. Redelivery is a form of retry (some refer to it 
+as second-level retry) where the message is removed from the queue and then redelivered to the queue at a future time.
+
+To use delayed redelivery, ensure the transport is properly configured. RabbitMQ required a delayed-exchange plug-in, 
+and ActiveMQ (non-Artemis) requires the scheduler to be enabled via the XML configuration.
+
+MassTransit also supports scheduled redelivery using the UseScheduledRedelivery configuration method. Scheduled 
+redelivery requires the use of a message scheduler, which can be configured to use the message transport or 
+Quartz.NET/Hangfire. The configuration is similar, just ensure the scheduler is properly configured.
+
+However, in most cases using UseDelayedRedelivery (as configured above) is preferred to avoid overloading the scheduler 
+with delayed redeliveries that typically have short redelivery times, leaving the scheduler free to do things like 
+actual scheduling of messages.

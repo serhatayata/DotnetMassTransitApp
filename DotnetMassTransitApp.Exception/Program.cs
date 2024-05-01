@@ -22,7 +22,14 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.Host(host: queueSettings.Host);
 
-        //cfg.UseMessageRetry(r => r.Immediate(5));
+        // if the initial 5 immediate retries fail (the database is really, really down), the message will retry an
+        // additional three times after 5, 15, and 30 minutes. This could mean a total of 15 retry attempts (on top of
+        // the initial 4 attempts prior to the retry/redelivery filters taking control).
+        cfg.UseDelayedRedelivery(r =>
+        {
+            r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
+        });
+        cfg.UseMessageRetry(r => r.Immediate(5));
 
         cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
         {
