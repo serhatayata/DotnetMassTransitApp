@@ -172,4 +172,24 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("send-notification-order")]
+    public async Task<IActionResult> SendNotificationOrderMethod()
+    {
+        try
+        {
+            await _sendEndpointProvider.Send(
+            new SendNotificationOrder
+            {
+                OrderId = Guid.NewGuid(),
+                Email = "srht@mail.com"
+            });
+
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
 }

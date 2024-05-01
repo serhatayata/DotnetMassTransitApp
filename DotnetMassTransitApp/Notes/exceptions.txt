@@ -1,0 +1,5 @@
+﻿When a message is delivered to the consumer, the consumer throws an exception. With a default bus configuration, the 
+exception is caught by middleware in the transport (the ErrorTransportFilter to be exact), and the message is moved to an 
+_error queue (prefixed by the receive endpoint queue name). The exception details are stored as headers with the message 
+for analysis and to assist in troubleshooting the exception.
+

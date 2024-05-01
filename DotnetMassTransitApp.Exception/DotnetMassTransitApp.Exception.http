@@ -1,0 +1,6 @@
+@DotnetMassTransitApp.Exception_HostAddress = http://localhost:5129
+
+GET {{DotnetMassTransitApp.Exception_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

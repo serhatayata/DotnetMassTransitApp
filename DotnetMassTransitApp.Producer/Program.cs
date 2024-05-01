@@ -25,6 +25,7 @@ builder.Services.AddMassTransit(mt =>
         });
 
         EndpointConvention.Map<SubmitOrder>(new Uri("rabbitmq://localhost/submit-order"));
+        EndpointConvention.Map<SendNotificationOrder>(new Uri("rabbitmq://localhost/send-notification-order"));
         EndpointConvention.Map<StartDelivery>(new Uri("rabbitmq://localhost/start-delivery"));
         EndpointConvention.Map<FinalizeOrderRequest>(new Uri("rabbitmq://localhost/finalize-order-request"));
 
