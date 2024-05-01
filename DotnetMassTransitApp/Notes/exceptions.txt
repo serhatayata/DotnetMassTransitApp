@@ -58,3 +58,10 @@ the consumer) and subsequently throws an exception, it isn't likely that those m
 sent. MassTransit provides an outbox to buffer those messages until the consumer completes successfully. If an exception 
 is thrown, the buffered messages are discarded.
 
+
+///////// Configuring for a consumer or saga
+
+If there are multiple consumers (or saga) on the same endpoint (which could potentially get you on the naughty list), and 
+the retry/redelivery behavior should only apply to a specific consumer or saga, the same configuration can be 
+applied specifically to the consumer or saga.
+

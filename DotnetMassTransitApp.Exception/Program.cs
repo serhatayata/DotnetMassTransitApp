@@ -29,16 +29,25 @@ builder.Services.AddMassTransit(mt =>
         {
             r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
         });
+
         cfg.UseMessageRetry(r => r.Immediate(5));
 
         cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
         {
-            ep.ConfigureConsumer<SendNotificationOrderConsumer>(cntx, c => c.UseMessageRetry(r =>
+            ep.ConfigureConsumer<SendNotificationOrderConsumer>(cntx, c =>
             {
-                r.Interval(1, TimeSpan.FromSeconds(1));
-                r.Ignore<ArgumentNullException>();
-                r.Ignore<DataException>(x => x.Message.Contains("SQL"));
-            }));
+                c.UseDelayedRedelivery(r =>
+                {
+                    r.Intervals(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(15), TimeSpan.FromMinutes(30));
+                });
+
+                c.UseMessageRetry(r =>
+                {
+                    r.Interval(1, TimeSpan.FromSeconds(1));
+                    r.Ignore<ArgumentNullException>();
+                    r.Ignore<DataException>(x => x.Message.Contains("SQL"));
+                });
+            });
 
             // global message retry settings for this queue
             ep.UseMessageRetry(r =>
