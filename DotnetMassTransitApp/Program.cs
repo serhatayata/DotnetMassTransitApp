@@ -11,21 +11,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<QueueSettings>("QueueSettings", configuration);
 
-builder.Services.AddMassTransit(mt =>
-{
-    mt.SetKebabCaseEndpointNameFormatter();
-    mt.UsingRabbitMq((cntx, cfg) =>
-    {
-        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
-        cfg.Host(queueSettings.Uri, c =>
-        {
-            c.Username(queueSettings.Username);
-            c.Password(queueSettings.Password);
-        });
+//builder.Services.AddMassTransit(mt =>
+//{
+//    mt.SetKebabCaseEndpointNameFormatter();
+//    mt.UsingRabbitMq((cntx, cfg) =>
+//    {
+//        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+//        cfg.Host(queueSettings.Uri, c =>
+//        {
+//            c.Username(queueSettings.Username);
+//            c.Password(queueSettings.Password);
+//        });
 
-        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
-    });
-});
+//        cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
+//    });
+//});
 
 var app = builder.Build();
 

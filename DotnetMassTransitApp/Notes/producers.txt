@@ -146,3 +146,10 @@ be the same used to set the OrderId in each item.
 Message initializers are asynchronous which makes it possible to do some pretty cool things, including waiting for Task 
 input properties to complete and use the result to initialize the property. An example is shown below.
 
+
+//////// Send Headers
+
+There are a variety of message headers available which are used for correlation and tracking of messages. It is also possible 
+to override some default behaviors of MassTransit when a fault occurs. For instance, a fault is normally published when 
+a consumer throws an exception. If instead the application wants faults delivered to a specific address, the FaultAddress can 
+be specified via a header.

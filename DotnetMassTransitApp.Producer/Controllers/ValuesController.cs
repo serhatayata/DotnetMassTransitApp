@@ -143,4 +143,33 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("send-headers")]
+    public async Task<IActionResult> SendHeadersMethod()
+    {
+        try
+        {
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("rabbitmq://localhost/submit-order"));
+
+            await endpoint.Send<SubmitOrder>(
+            new SubmitOrder
+            {
+                OrderId = InVar.Id,
+                OrderDate = InVar.Timestamp,
+                OrderNumber = "18001",
+                OrderAmount = 123.45m,
+                OrderItems = new OrderItem[]
+                {
+                    new OrderItem { OrderId = InVar.Id, ItemNumber = "237" },
+                    new OrderItem { OrderId = InVar.Id, ItemNumber = "762" }
+                }
+            }, context => context.FaultAddress = new Uri("rabbitmq://localhost/order_faults"));
+
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
 }
