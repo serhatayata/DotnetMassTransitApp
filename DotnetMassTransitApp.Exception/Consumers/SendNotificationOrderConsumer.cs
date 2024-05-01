@@ -7,6 +7,6 @@ public class SendNotificationOrderConsumer : IConsumer<SendNotificationOrder>
 {
     public async Task Consume(ConsumeContext<SendNotificationOrder> context)
     {
-        throw new NotImplementedException("Error exceptions");
+        throw new NullReferenceException("Error exceptions");
     }
 }

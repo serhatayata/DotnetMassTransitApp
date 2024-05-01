@@ -3,3 +3,29 @@ exception is caught by middleware in the transport (the ErrorTransportFilter to 
 _error queue (prefixed by the receive endpoint queue name). The exception details are stored as headers with the message 
 for analysis and to assist in troubleshooting the exception.
 
+//////// Retry
+
+Some exceptions may be caused by a transient condition, such as a database deadlock, a busy web service, or some similar type 
+of situation which usually clears up on a second attempt. With these exception types, it is often desirable to retry the 
+message delivery to the consumer, allowing the consumer to try the operation again.
+
+The UseMessageRetry method is an extension method that configures a middleware filter, in this case the RetryFilter. 
+
+MassTransit retry filters execute in memory and maintain a lock on the message. As such, they should only be used to 
+handle short, transient error conditions. Setting a retry interval of an hour would fall into the category of bad things. 
+To retry messages after longer waits, look at the next section on redelivering messages. For example, if a consumer with 
+a concurrency limit of 5 and a retry interval of one hour consumes 5 messages that causes retries, the consumer will 
+be effectively stalled for a whole hour as all the concurrent message slots are in use waiting for the retry interval.
+
+
+//////// Exception Filters
+
+Sometimes you do not want to always retry, but instead only retry when some specific exception is thrown and fault for all 
+other exceptions. To implement this, you can use an exception filter. Specify exception types using either the Handle or 
+Ignore method. A filter can have either Handle or Ignore statements, combining them has unpredictable effects.
+
+Both methods have two signatures:
+
+- Generic version Handle<T> and Ignore<T> where T must be derivate of System.Exception. With no argument, all exceptions of specified type will be either handled or ignored. You can also specify a function argument that will filter exceptions further based on other parameters.
+- Non-generic version that needs one or more exception types as parameters. No further filtering is possible if this version is used.
+
