@@ -45,3 +45,16 @@ Quartz.NET/Hangfire. The configuration is similar, just ensure the scheduler is 
 However, in most cases using UseDelayedRedelivery (as configured above) is preferred to avoid overloading the scheduler 
 with delayed redeliveries that typically have short redelivery times, leaving the scheduler free to do things like 
 actual scheduling of messages.
+
+
+//////// Outbox
+
+Outbox pattern is a feature used to ensure that message publishing and database operations are atomic, meaning they 
+either succeed or fail together. This pattern is particularly useful in distributed systems where you need to maintain 
+data consistency across multiple services and databases.
+
+If the consumer publishes events or sends messages (using ConsumeContext, which is provided via the Consume method on 
+the consumer) and subsequently throws an exception, it isn't likely that those messages should still be published or 
+sent. MassTransit provides an outbox to buffer those messages until the consumer completes successfully. If an exception 
+is thrown, the buffered messages are discarded.
+

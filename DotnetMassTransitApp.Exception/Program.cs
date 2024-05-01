@@ -50,6 +50,8 @@ builder.Services.AddMassTransit(mt =>
                 r.Ignore<ArgumentException>(t => t.ParamName == "orderTotal");
             });
         });
+
+        cfg.UseInMemoryOutbox(cntx);
     });
 });
 
