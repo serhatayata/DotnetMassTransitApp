@@ -1,6 +1,7 @@
 using DotnetMassTransitApp.Exception.Consumers;
 using DotnetMassTransitApp.Exception.Models;
 using MassTransit;
+using MassTransit.Middleware;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,14 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
         {
+            //ep.DiscardFaultedMessages();
+
+            ep.ConfigureError(x =>
+            {
+                x.UseFilter(new GenerateFaultFilter());
+                x.UseFilter(new ErrorTransportFilter());
+            });
+
             ep.ConfigureConsumer<SendNotificationOrderConsumer>(cntx, c =>
             {
                 //c.UseDelayedRedelivery(r =>

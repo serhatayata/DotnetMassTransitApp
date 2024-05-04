@@ -82,3 +82,16 @@ published, allowing any subscribed consumers to receive it.
 Developers may want to do something with faults, such as updating an operational dashboard. To observe faults separate of 
 the consumer that caused the fault to be produced, a consumer can consume fault messages the same as any other message.
 
+
+//////// Error Pipe
+
+By default, MassTransit will move faulted messages to the _error queue. This behavior can be customized for each receive endpoint.
+
+- GenerateFaultFilter: GenerateFaultFilter is a filter that generates fault messages for exceptions that occur during 
+message processing. When a consumer encounters an exception while processing a message, MassTransit generates a fault 
+message containing information about the exception and sends it to the error queue. This allows for centralized error 
+handling and monitoring.
+
+- ErrorTransportFilter: ErrorTransportFilter is a filter that manages the transportation of error messages to the error 
+queue. It ensures that fault messages are properly transported to the designated error queue for further processing 
+and analysis. This filter handles the logistics of routing error messages and ensures that they are not lost in transit.
