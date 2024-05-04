@@ -70,3 +70,8 @@ when you send or publish a message from producer it cannot be consumed from cons
 
 When this scenario happens, these messages would go to "_skipped" queue.
 ```
+
+```txt
+For "send-notification-order" queue,
+When I send a message to this queue and consumer get the message, there might be an error. When this consumer throws an exception, first, this message goes to queue "send-notification-order-fault" and this message is consumed by "SendNotificationOrderFaultConsumer", after this consumer process, this message goes to "send-notification-order_error"
+```
