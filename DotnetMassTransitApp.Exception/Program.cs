@@ -37,6 +37,7 @@ builder.Services.AddMassTransit(mt =>
         cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
         {
             //ep.DiscardFaultedMessages();
+            //ep.DiscardSkippedMessages();
 
             ep.ConfigureError(x =>
             {

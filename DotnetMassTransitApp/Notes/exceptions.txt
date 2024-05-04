@@ -95,3 +95,28 @@ handling and monitoring.
 - ErrorTransportFilter: ErrorTransportFilter is a filter that manages the transportation of error messages to the error 
 queue. It ensures that fault messages are properly transported to the designated error queue for further processing 
 and analysis. This filter handles the logistics of routing error messages and ensures that they are not lost in transit.
+
+
+//////// Dead-Letter Pipe
+
+By default, MassTransit will move skipped messages to the _skipped queue. This behavior can be customized for each 
+receive endpoint.
+
+Skipped messages are messages that are read from the receive endpoint queue that do not have a matching handler, consumer, 
+saga, etc. configured. For instance, receiving a SubmitOrder message on a receive endpoint that only has a consumer for 
+the UpdateOrder message would cause that SubmitOrder message to end up in the _skipped queue.
+
+
+The DeadLetterTransportFilter in MassTransit is a filter responsible for handling messages that cannot be successfully 
+processed and are considered "dead-lettered." When a message fails to be processed due to various reasons such as 
+delivery failures, deserialization errors, or processing exceptions, it may be moved to a dead-letter queue for 
+further investigation and analysis.
+
+The purpose of the DeadLetterTransportFilter is to facilitate the transport of dead-lettered messages to a designated 
+dead-letter queue, where they can be stored temporarily or indefinitely for later review by developers or system 
+administrators. By intercepting messages that encounter processing errors or failures, the filter ensures that these 
+messages are not lost and are instead redirected to a dedicated location for error handling and resolution.
+
+In summary, the DeadLetterTransportFilter plays a crucial role in MassTransit's error handling mechanism by facilitating 
+the proper routing of failed messages to dead-letter queues, enabling effective troubleshooting and resolution of 
+processing errors within a messaging system.
