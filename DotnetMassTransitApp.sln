@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Produc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{B979CCBC-9513-458B-9B8A-92032779AA97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Exception", "DotnetMassTransitApp.Exception\DotnetMassTransitApp.Exception.csproj", "{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Exception", "DotnetMassTransitApp.Exception\DotnetMassTransitApp.Exception.csproj", "{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Requests", "DotnetMassTransitApp.Requests\DotnetMassTransitApp.Requests.csproj", "{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

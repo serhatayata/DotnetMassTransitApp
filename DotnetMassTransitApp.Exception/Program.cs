@@ -1,7 +1,7 @@
 using DotnetMassTransitApp.Exception.Consumers;
-using DotnetMassTransitApp.Exception.Models;
 using MassTransit;
 using MassTransit.Middleware;
+using Shared.Queue.Models;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);

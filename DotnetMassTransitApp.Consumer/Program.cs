@@ -2,6 +2,7 @@ using DotnetMassTransitApp.Consumer.Consumers;
 using DotnetMassTransitApp.Consumer.Models;
 using MassTransit;
 using Shared.Queue.Contracts;
+using Shared.Queue.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
 using Shared.Queue.Requests;
 using Shared.Queue.Responses;
+using System.Threading;
 
 namespace DotnetMassTransitApp.Producer.Controllers;
 
@@ -11,17 +12,21 @@ namespace DotnetMassTransitApp.Producer.Controllers;
 public class ValuesController : ControllerBase
 {
     private readonly IRequestClient<FinalizeOrderRequest> _finalizeOrderRequestClient;
+    private readonly IRequestClient<CheckOrderStatus> _checkOrderStatusRequestClient;
+
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
 
     public ValuesController(
         ISendEndpointProvider sendEndpointProvider,
         IBus bus,
-        IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient)
+        IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient,
+        IRequestClient<CheckOrderStatus> checkOrderStatusRequestClient)
     {
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
         _finalizeOrderRequestClient = finalizeOrderRequestClient;
+        _checkOrderStatusRequestClient = checkOrderStatusRequestClient;
     }
 
     [HttpGet("send-endpoint")]
@@ -184,6 +189,30 @@ public class ValuesController : ControllerBase
                 OrderId = Guid.NewGuid(),
                 Email = "srht@mail.com"
             });
+
+            return Ok();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
+
+    /// <summary>
+    /// If the cancellationToken passed to GetResponse is canceled, the request client will stop waiting for a response.        However, the request message produced remains in the queue until it is consumed or the message time-to-live expires.    By default, the message time-to-live is set to the request timeout (which defaults to 30 seconds).
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet("check-order-status")]
+    public async Task<IActionResult> CheckOrderStatusMethod(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult>(
+                new OrderStatusResult 
+                { 
+                    OrderId = Guid.NewGuid() 
+                }, cancellationToken);
 
             return Ok();
         }

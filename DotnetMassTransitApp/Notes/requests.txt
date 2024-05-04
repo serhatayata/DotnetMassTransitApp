@@ -1,0 +1,9 @@
+﻿Request/response is a commonly used message pattern where one service sends a request to another service, continuing after 
+the response is received. In a distributed system, this can increase the latency of an application since the service may 
+be hosted in another process, on another machine, or may even be a remote service in another network. While in many cases it 
+is best to avoid request/response use in distributed applications, particularly when the request is a command, it is 
+often necessary and preferred over more complex solutions.
+
+In MassTransit, developers use a request client to send or publish requests and wait for a response. The request client 
+is asynchronous, and supports use of the await keyword since it returns a Task.
+
