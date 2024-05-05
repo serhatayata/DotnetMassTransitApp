@@ -210,26 +210,37 @@ public class ValuesController : ControllerBase
         {
             var orderId = Guid.NewGuid();
 
-            var response = await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult, OrderNotFound>(
+            // 1
+            Response response = await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult, OrderNotFound>(
                 new OrderStatusResult 
                 { 
                     OrderId = orderId
                 }, x => x.UseExecute(context => context.Headers.Set("tenant-id", "some-value")), cancellationToken);
 
+            // 2
             //await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult>(new
             //{
             //    orderId,
             //    __Header_Tenant_Id = "some-value"
             //}, cancellationToken);
 
-            if (response.Is(out Response<OrderStatusResult> responseA))
+            // Multiple response types 1
+            //if (response.Is(out Response<OrderStatusResult> responseA))
+            //{
+            //    // do something with the order
+            //}
+            //else if (response.Is(out Response<OrderNotFound> responseB))
+            //{
+            //    // the order was not found
+            //}
+
+            // Multiple response types 2
+            var accepted = response switch
             {
-                // do something with the order
-            }
-            else if (response.Is(out Response<OrderNotFound> responseB))
-            {
-                // the order was not found
-            }
+                (_, OrderStatusResult a) => true,
+                (_, OrderNotFound b) => false,
+                _ => throw new InvalidOperationException()
+            };
 
             return Ok();
         }
