@@ -1,4 +1,4 @@
-﻿namespace Shared.Queue.Requests;
+﻿namespace Shared.Queue.Responses;
 
 public class OrderStatusResult
 {

@@ -7,3 +7,15 @@ often necessary and preferred over more complex solutions.
 In MassTransit, developers use a request client to send or publish requests and wait for a response. The request client 
 is asynchronous, and supports use of the await keyword since it returns a Task.
 
+//////// Client Configuration
+
+A request client can be resolved using dependency injection for any valid message type, no configuration is required. By 
+default, request messages are published and should be consumed by only one consumer/receive endpoint connected to the 
+message broker. Multiple consumers connected to the same receive endpoint are fine, requests will be load balanced across 
+the connected consumers.
+
+To configure the request client for a message type, add the request client to the configuration explicitly.
+
+//////// Request Headers
+
+To create a request and add a header to the SendContext, one option is to add an execute filter to the request pipeline.

@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Shared.Queue.Contracts;
-using Shared.Queue.Requests;
+using Shared.Queue.Responses;
 
 namespace DotnetMassTransitApp.Requests.Consumers;
 
@@ -12,13 +12,18 @@ public class CheckOrderStatusConsumer : IConsumer<CheckOrderStatus>
 {
     public async Task Consume(ConsumeContext<CheckOrderStatus> context)
     {
-        await context.RespondAsync<OrderStatusResult>(
-        new OrderStatusResult
-        {
-            OrderId = context.Message.OrderId,
-            StatusCode = 200,
-            Timestamp = DateTime.UtcNow,
-            StatusText = "Status 200 text"
-        });
+        var notFound = true;
+
+        if (notFound)
+            await context.RespondAsync<OrderNotFound>(context.Message);
+        else
+            await context.RespondAsync<OrderStatusResult>(
+            new OrderStatusResult
+            {
+                OrderId = context.Message.OrderId,
+                StatusCode = 200,
+                Timestamp = DateTime.UtcNow,
+                StatusText = "Status 200 text"
+            });
     }
 }

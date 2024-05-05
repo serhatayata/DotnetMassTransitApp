@@ -208,11 +208,28 @@ public class ValuesController : ControllerBase
     {
         try
         {
-            var response = await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult>(
+            var orderId = Guid.NewGuid();
+
+            var response = await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult, OrderNotFound>(
                 new OrderStatusResult 
                 { 
-                    OrderId = Guid.NewGuid() 
-                }, cancellationToken);
+                    OrderId = orderId
+                }, x => x.UseExecute(context => context.Headers.Set("tenant-id", "some-value")), cancellationToken);
+
+            //await _checkOrderStatusRequestClient.GetResponse<OrderStatusResult>(new
+            //{
+            //    orderId,
+            //    __Header_Tenant_Id = "some-value"
+            //}, cancellationToken);
+
+            if (response.Is(out Response<OrderStatusResult> responseA))
+            {
+                // do something with the order
+            }
+            else if (response.Is(out Response<OrderNotFound> responseB))
+            {
+                // the order was not found
+            }
 
             return Ok();
         }
