@@ -19,3 +19,6 @@ To configure the request client for a message type, add the request client to th
 //////// Request Headers
 
 To create a request and add a header to the SendContext, one option is to add an execute filter to the request pipeline.
+
+//////// Accept Response Types
+

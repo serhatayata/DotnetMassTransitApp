@@ -14,6 +14,7 @@ builder.Services.AddMassTransit(mt =>
     mt.SetKebabCaseEndpointNameFormatter();
 
     mt.AddConsumer<CheckOrderStatusConsumer>();
+    mt.AddConsumer<CancelOrderConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -24,6 +25,11 @@ builder.Services.AddMassTransit(mt =>
         cfg.ReceiveEndpoint(queueName: "check-order-status", ep =>
         {
             ep.ConfigureConsumer<CheckOrderStatusConsumer>(cntx);
+        });
+
+        cfg.ReceiveEndpoint(queueName: "cancel-order", ep =>
+        {
+            ep.ConfigureConsumer<CancelOrderConsumer>(cntx);
         });
     });
 });

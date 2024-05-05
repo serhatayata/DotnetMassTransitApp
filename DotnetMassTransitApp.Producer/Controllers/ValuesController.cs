@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
+using Shared.Queue.Events;
 using Shared.Queue.Requests;
 using Shared.Queue.Responses;
 using System.Threading;
@@ -13,6 +14,7 @@ public class ValuesController : ControllerBase
 {
     private readonly IRequestClient<FinalizeOrderRequest> _finalizeOrderRequestClient;
     private readonly IRequestClient<CheckOrderStatus> _checkOrderStatusRequestClient;
+    private readonly IRequestClient<CancelOrder> _cancelOrderRequestClient;
 
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
@@ -21,12 +23,14 @@ public class ValuesController : ControllerBase
         ISendEndpointProvider sendEndpointProvider,
         IBus bus,
         IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient,
-        IRequestClient<CheckOrderStatus> checkOrderStatusRequestClient)
+        IRequestClient<CheckOrderStatus> checkOrderStatusRequestClient,
+        IRequestClient<CancelOrder> cancelOrderRequestClient)
     {
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
         _finalizeOrderRequestClient = finalizeOrderRequestClient;
         _checkOrderStatusRequestClient = checkOrderStatusRequestClient;
+        _cancelOrderRequestClient = cancelOrderRequestClient;
     }
 
     [HttpGet("send-endpoint")]
@@ -245,6 +249,34 @@ public class ValuesController : ControllerBase
             return Ok();
         }
         catch
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpGet("accept-response-types")]
+    public async Task<IActionResult> AcceptResponseTypesMethod(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _cancelOrderRequestClient.GetResponse<OrderCanceled, OrderNotFound, OrderAlreadyShipped>(new CancelOrder());
+
+            if (response.Is(out Response<OrderCanceled> canceled))
+            {
+                return Ok();
+            }
+            else if (response.Is(out Response<OrderNotFound> responseB))
+            {
+                return NotFound();
+            }
+            else if (response.Is(out Response<OrderAlreadyShipped> responseC))
+            {
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
         {
             return BadRequest();
         }
