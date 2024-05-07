@@ -20,5 +20,22 @@ To configure the request client for a message type, add the request client to th
 
 To create a request and add a header to the SendContext, one option is to add an execute filter to the request pipeline.
 
-//////// Accept Response Types
+
+//////// Request Handle
+
+Client factories or the request client can also be used to create a request instead of calling GetResponse. This is an 
+uncommon scenario, but is available as an option and may make sense depending on the situation. If a request is created 
+(which returns a RequestHandle<T>), the request handle must be disposed after the request completes.
+
+//////// Request Client Factory
+
+The request client is composed of two parts, a client factory and a request client. There are two client factories, the 
+scoped client factory, and the bus client factory.
+
+//////// IScopedClientFactory
+
+Using IRequestClient requires a container scope, and the request client for a request message type is resolved from 
+container scope using a scoped client factory. As an alternative to specifying IRequestClient<T> as a constructor 
+dependency, the scoped client factory can be used instead of create a request client directly. This can be useful when 
+the destination address may change based on context, such as a TenantId.
 

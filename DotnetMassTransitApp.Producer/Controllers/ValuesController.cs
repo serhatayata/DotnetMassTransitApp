@@ -15,6 +15,7 @@ public class ValuesController : ControllerBase
     private readonly IRequestClient<FinalizeOrderRequest> _finalizeOrderRequestClient;
     private readonly IRequestClient<CheckOrderStatus> _checkOrderStatusRequestClient;
     private readonly IRequestClient<CancelOrder> _cancelOrderRequestClient;
+    private readonly IScopedClientFactory _scopedClientFactory;
 
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
@@ -24,13 +25,15 @@ public class ValuesController : ControllerBase
         IBus bus,
         IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient,
         IRequestClient<CheckOrderStatus> checkOrderStatusRequestClient,
-        IRequestClient<CancelOrder> cancelOrderRequestClient)
+        IRequestClient<CancelOrder> cancelOrderRequestClient,
+        IScopedClientFactory scopedClientFactory)
     {
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
         _finalizeOrderRequestClient = finalizeOrderRequestClient;
         _checkOrderStatusRequestClient = checkOrderStatusRequestClient;
         _cancelOrderRequestClient = cancelOrderRequestClient;
+        _scopedClientFactory = scopedClientFactory;
     }
 
     [HttpGet("send-endpoint")]
@@ -298,6 +301,21 @@ public class ValuesController : ControllerBase
 
         var a = await resultA;
         var b = await resultB;
+
+        return Ok();
+    }
+
+    [HttpGet("scoped-client-factory")]
+    public async Task<IActionResult> ScopedClientFactoryMethod(CancellationToken cancellationToken)
+    {
+        var orderId = Guid.NewGuid();
+        var client = _scopedClientFactory.CreateRequestClient<CheckOrderStatus>();
+
+        var resultB = await client.GetResponse<OrderStatusResult, OrderNotFound>(
+        new OrderStatusResult
+        {
+            OrderId = orderId
+        }, cancellationToken);
 
         return Ok();
     }
