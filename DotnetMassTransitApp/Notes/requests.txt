@@ -39,3 +39,28 @@ container scope using a scoped client factory. As an alternative to specifying I
 dependency, the scoped client factory can be used instead of create a request client directly. This can be useful when 
 the destination address may change based on context, such as a TenantId.
 
+- Scoped Lifetime Management: MassTransit leverages dependency injection, and it's common to have scoped 
+dependencies, especially when working with database contexts, unit of work patterns, etc. IScopedClientFactory ensures that 
+the lifetime of these dependencies is tied to the message processing scope, ensuring proper disposal and management.
+
+- Concurrency and Thread Safety: Creating a new instance for each message ensures thread safety, especially in scenarios 
+where multiple messages might be processed concurrently. Each message handler gets its own isolated instance, 
+preventing concurrency issues related to shared state.
+
+- Resource Management: If your consumers or producers use resources that need to be managed carefully (like 
+database connections), creating scoped instances ensures that these resources are properly disposed of when the processing of 
+a message is completed, preventing resource leaks.
+
+- Performance Optimization: Creating new instances for each message might seem like overhead, but it can actually
+improve performance by preventing contention on shared resources. It allows for better parallelism, especially in 
+scenarios where message processing involves I/O-bound operations.
+
+//////// IClientFactory
+
+If there is no container scope available, and one cannot be created, the root client factory can be used instead. Note that non-scoped interfaces are not compatible with scoped publish or send filters.
+
+DIFFERENCE :
+
+IClientFactory: This interface is used for creating non-scoped instances of MassTransit clients, such as request clients or publishing endpoints. It's typically registered with the dependency injection container as a singleton and provides a way to create clients for sending messages or making requests across application boundaries. Instances created by IClientFactory are not tied to the message processing scope and can be reused across multiple message handlers or components within the application.
+
+IScopedClientFactory: On the other hand, IScopedClientFactory is specifically designed for creating scoped instances of MassTransit clients within the context of message processing. It's used primarily within message consumers to create clients that have a lifetime tied to the processing of a single message. Instances created by IScopedClientFactory are disposed of after the message processing is completed, ensuring proper resource cleanup and isolation between message processing contexts.

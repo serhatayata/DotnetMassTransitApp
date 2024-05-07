@@ -319,4 +319,22 @@ public class ValuesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("client-factory")]
+    public async Task<IActionResult> ClientFactoryMethod(
+        CancellationToken cancellationToken, 
+        IServiceProvider provider)
+    {
+        var clientFactory = provider.GetRequiredService<IClientFactory>();
+        var client = clientFactory.CreateRequestClient<CheckOrderStatus>();
+
+        var orderId = Guid.NewGuid();
+        var resultB = await client.GetResponse<OrderStatusResult, OrderNotFound>(
+        new OrderStatusResult
+        {
+            OrderId = orderId
+        }, cancellationToken);
+
+        return Ok();
+    }
 }
