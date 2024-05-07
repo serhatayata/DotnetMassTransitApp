@@ -281,4 +281,24 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("concurrent-requests")]
+    public async Task<IActionResult> ConcurrentRequestsMethod(CancellationToken cancellationToken)
+    {
+        var resultA = _cancelOrderRequestClient.GetResponse<OrderCanceled, OrderNotFound, OrderAlreadyShipped>(new CancelOrder());
+
+        var orderId = Guid.NewGuid();
+        var resultB = _checkOrderStatusRequestClient.GetResponse<OrderStatusResult, OrderNotFound>(
+            new OrderStatusResult
+            {
+                OrderId = orderId
+            }, cancellationToken);
+
+        await Task.WhenAll(resultA, resultB);
+
+        var a = await resultA;
+        var b = await resultB;
+
+        return Ok();
+    }
 }
