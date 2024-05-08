@@ -1,0 +1,39 @@
+﻿To consume messages, one or more consumers must be added and receive endpoints configured for the added consumers. 
+MassTransit connects each receive endpoint to a queue on the message broker.
+
+To add a consumer and automatically configure a receive endpoint for the consumer, call one of the AddConsumer methods and 
+call ConfigureEndpoints
+
+MassTransit will automatically configure a receive endpoint for the SubmitOrderConsumer using the name returned by the 
+configured endpoint name formatter. When the bus is started, the receive endpoint will be started and messages will be 
+delivered from the queue by the transport to an instance of the consumer.
+
+All consumer types can be added, including consumers, sagas, saga state machines, and routing slip activities. If a job consumer 
+is added, additional configuration is required.
+
+To exclude a consumer, saga, or routing slip activity from automatic configuration, use the ExcludeFromConfigureEndpoints
+
+//////// Configure Endpoints
+
+As shown in the example above, using ConfigureEndpoints is the preferred approach to configure receive endpoints. By 
+registering consumers, sagas, and routing slip activities along with their optional definitions, MassTransit is able to 
+configure receive endpoints for all registered consumer types. Receive endpoint names are generated using an endpoint name 
+formatter (unless otherwise specified in a definition), and each receive endpoint is configured.
+
+As receive endpoints are configured, one or more consumer types are configured on each receive endpoint. If multiple consumer 
+types share the same endpoint name, those consumer types will be configured on the same receive endpoint. For each consumer 
+type, its respective consumer, saga, or activity definition will be applied to the receive endpoint.
+
+If multiple consumer types share the same receive endpoint, and more than one of those consumer types have a matching 
+definition that specifies the same middleware component, multiple filters may be configured! This may lead to unpredictable 
+results, so caution is advised when configuring multiple consumer types on the same receive endpoint.
+
+//////// Configure Endpoints Callback
+
+To apply receive endpoint settings or configure middleware for all receive endpoints configured by ConfigureEndpoints, a 
+callback can be added.
+
+When ConfigureEndpoints is called, any registered callbacks will be called for every recieve endpoint endpoint. Each callback 
+will only be called once per receive endpoint.
+
+To conditionally apply transport-specific settings, the cfg parameter can be pattern-matched to the transport type as shown below.

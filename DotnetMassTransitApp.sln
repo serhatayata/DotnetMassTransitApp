@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Exception", "DotnetMassTransitApp.Exception\DotnetMassTransitApp.Exception.csproj", "{EAC9C6AC-0F4A-482C-BF4B-A7EA98EDE145}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Requests", "DotnetMassTransitApp.Requests\DotnetMassTransitApp.Requests.csproj", "{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Requests", "DotnetMassTransitApp.Requests\DotnetMassTransitApp.Requests.csproj", "{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Configuration", "DotnetMassTransitApp.Configuration\DotnetMassTransitApp.Configuration.csproj", "{BB7D587E-FBCC-40E2-9A60-9EFEDF214451}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB567FBA-294C-4BD0-9DD5-5ADD61DDC326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7D587E-FBCC-40E2-9A60-9EFEDF214451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7D587E-FBCC-40E2-9A60-9EFEDF214451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7D587E-FBCC-40E2-9A60-9EFEDF214451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7D587E-FBCC-40E2-9A60-9EFEDF214451}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
