@@ -67,3 +67,10 @@ ConfigureMessageTopology -> 	Create exchanges/topics on the broker and bind them
 PublishFaults ->	Publish Fault<T> events when consumers fault -> 	true
 DefaultContentType ->	The default content type for received messages
 SerializerContentType ->	The default content type for sending/publishing messages
+
+
+//////// Temporary Endpoints
+
+Some consumers only need to receive messages while connected, and any messages published while disconnected should be 
+discarded. This can be achieved by using a TemporaryEndpointDefinition to configure the receive endpoint.
+

@@ -56,16 +56,21 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.PrefetchCount = 32; // applies to all receive endpoints
 
-        cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
-        {
-            ep.ConcurrentMessageLimit = 28; // only applies to this endpoint
-            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        //cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
+        //{
+        //    ep.ConcurrentMessageLimit = 28; // only applies to this endpoint
+        //    ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
 
-            // When using ConfigureConsumer with a consumer that has a definition, the EndpointName, PrefetchCount,
-            // and Temporary properties of the consumer definition are not used.
+        //    // When using ConfigureConsumer with a consumer that has a definition, the EndpointName, PrefetchCount,
+        //    // and Temporary properties of the consumer definition are not used.
+        //});
+
+        cfg.ReceiveEndpoint(new TemporaryEndpointDefinition(), ep =>
+        {
+            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
         });
 
-        //cfg.ConfigureEndpoints(cntx);
+        cfg.ConfigureEndpoints(cntx);
     });
 });
 
