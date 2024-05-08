@@ -1,6 +1,7 @@
 using DotnetMassTransitApp.Consumer.Consumers;
 using DotnetMassTransitApp.Consumer.Models;
 using MassTransit;
+using Microsoft.AspNetCore.Hosting;
 using Shared.Queue.Contracts;
 using Shared.Queue.Models;
 

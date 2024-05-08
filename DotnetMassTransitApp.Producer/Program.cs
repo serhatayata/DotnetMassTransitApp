@@ -13,6 +13,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<QueueSettings>("QueueSettings", configuration);
 
+builder.Services.AddMediator(cfg =>
+{
+    cfg.AddConsumers(typeof(Program).Assembly);
+    cfg.AddRequestClient(typeof(CheckOrderStatus));
+});
+
 builder.Services.AddMassTransit(mt =>
 {
     mt.SetKebabCaseEndpointNameFormatter();

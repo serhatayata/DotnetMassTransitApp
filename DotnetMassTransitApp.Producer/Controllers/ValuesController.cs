@@ -1,4 +1,6 @@
 ﻿using MassTransit;
+using MassTransit.Mediator;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
 using Shared.Queue.Events;
@@ -20,13 +22,16 @@ public class ValuesController : ControllerBase
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
 
+    private readonly IMediator _mediator;
+
     public ValuesController(
         ISendEndpointProvider sendEndpointProvider,
         IBus bus,
         IRequestClient<FinalizeOrderRequest> finalizeOrderRequestClient,
         IRequestClient<CheckOrderStatus> checkOrderStatusRequestClient,
         IRequestClient<CancelOrder> cancelOrderRequestClient,
-        IScopedClientFactory scopedClientFactory)
+        IScopedClientFactory scopedClientFactory,
+        IMediator mediator)
     {
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
@@ -34,6 +39,7 @@ public class ValuesController : ControllerBase
         _checkOrderStatusRequestClient = checkOrderStatusRequestClient;
         _cancelOrderRequestClient = cancelOrderRequestClient;
         _scopedClientFactory = scopedClientFactory;
+        _mediator = mediator;
     }
 
     [HttpGet("send-endpoint")]
@@ -330,6 +336,23 @@ public class ValuesController : ControllerBase
 
         var orderId = Guid.NewGuid();
         var resultB = await client.GetResponse<OrderStatusResult, OrderNotFound>(
+        new OrderStatusResult
+        {
+            OrderId = orderId
+        }, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpGet("mediator")]
+    public async Task<IActionResult> MediatorMethod(CancellationToken cancellationToken)
+    {
+        Guid orderId = NewId.NextGuid();
+
+        await _mediator.Send<SubmitOrder>(new { OrderId = orderId });
+
+        var client = _mediator.CreateRequestClient<CheckOrderStatus>();
+        var result = await client.GetResponse<OrderStatusResult, OrderNotFound>(
         new OrderStatusResult
         {
             OrderId = orderId
