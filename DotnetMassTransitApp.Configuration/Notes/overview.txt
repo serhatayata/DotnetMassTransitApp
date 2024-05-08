@@ -57,3 +57,13 @@ The endpoint name formatters can also be customized by constructing a new instan
 By specifying a prefix, the endpoint name would be dev-submit-order. This is useful when sharing a single broker with 
 multiple developers (Amazon SQS is account-wide, for instance).
 
+
+//////// Receive Endpoints
+
+PrefetchCount ->	Number of unacknowledged messages delivered by the broker ->	max(CPU Count x 2,16)
+ConcurrentMessageLimit ->	Number of concurrent messages delivered to consumers -> 	(none, uses PrefetchCount)
+ConfigureConsumeTopology -> 	Create exchanges/topics on the broker and bind them to the receive endpoint	true
+ConfigureMessageTopology -> 	Create exchanges/topics on the broker and bind them to the receive endpoint for a specific message type	true
+PublishFaults ->	Publish Fault<T> events when consumers fault -> 	true
+DefaultContentType ->	The default content type for received messages
+SerializerContentType ->	The default content type for sending/publishing messages
