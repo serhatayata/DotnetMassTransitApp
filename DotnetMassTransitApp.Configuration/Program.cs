@@ -34,9 +34,10 @@ builder.Services.AddOptions<MassTransitHostOptions>()
 
 builder.Services.AddMassTransit(mt =>
 {
-    mt.SetKebabCaseEndpointNameFormatter();
+    mt.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "", includeNamespace: false));
 
-    mt.AddConsumer<SubmitOrderConsumer>().ExcludeFromConfigureEndpoints();
+    mt.AddConsumer<SubmitOrderConsumer>();
+    //.ExcludeFromConfigureEndpoints();
 
     mt.AddConfigureEndpointsCallback((name, cfg) =>
     {
@@ -53,12 +54,12 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.Host(host: queueSettings.Host);
 
-        cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
-        {
-            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
-        });
+        //cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
+        //{
+        //    ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        //});
 
-        //cfg.ConfigureEndpoints(cntx);
+        cfg.ConfigureEndpoints(cntx);
     });
 });
 

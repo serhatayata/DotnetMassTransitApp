@@ -37,3 +37,23 @@ When ConfigureEndpoints is called, any registered callbacks will be called for e
 will only be called once per receive endpoint.
 
 To conditionally apply transport-specific settings, the cfg parameter can be pattern-matched to the transport type as shown below.
+
+
+//////// Endpoint Name Formatters
+
+ConfigureEndpoints uses an IEndpointNameFormatter to format the queue names for all supported consumer types. The default 
+endpoint name formatter returns PascalCase class names without the namespace. There are several built-in endpoint name 
+formatters included. For the SubmitOrderConsumer, the receive endpoint names would be formatted as shown below. Note that 
+class suffixes such as Consumer, Saga, and Activity are trimmed from the endpoint name by default.
+
+Default ->	SetDefaultEndpointNameFormatter ->	SubmitOrder
+
+Snake Case ->	SetSnakeCaseEndpointNameFormatter ->	submit_order
+
+Kebab Case ->	SetKebabCaseEndpointNameFormatter ->	submit-order
+
+The endpoint name formatters can also be customized by constructing a new instance and configuring MassTransit to use it.
+
+By specifying a prefix, the endpoint name would be dev-submit-order. This is useful when sharing a single broker with 
+multiple developers (Amazon SQS is account-wide, for instance).
+
