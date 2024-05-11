@@ -1,6 +1,9 @@
 using DotnetMassTransitApp.Configuration.Consumers;
 using DotnetMassTransitApp.Configuration.Definitions;
+using HealthChecks.UI.Client;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Shared.Queue.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddLogging(s => s.AddConsole().AddDebug());
+
+var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
 
 builder.Services.AddOptions<MassTransitHostOptions>()
     .Configure(options =>
@@ -33,8 +38,21 @@ builder.Services.AddOptions<MassTransitHostOptions>()
         options.ConsumerStopTimeout = TimeSpan.FromMinutes(30);
     });
 
+#region HealthCheck
+builder.Services.AddHealthChecks()
+                .AddRabbitMQ(rabbitConnectionString: queueSettings.Host, tags: new List<string>() { "ready" });
+#endregion
+
+#region MassTransit configuration
 builder.Services.AddMassTransit(mt =>
 {
+    mt.ConfigureHealthCheckOptions(options =>
+    {
+        options.Name = "masstransit";
+        options.MinimalFailureStatus = HealthStatus.Unhealthy;
+        options.Tags.Add("health");
+    });
+
     mt.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "", includeNamespace: false));
 
     mt.AddConsumer<SubmitOrderConsumer, SubmitOrderConsumerDefinition>()
@@ -77,8 +95,6 @@ builder.Services.AddMassTransit(mt =>
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
-        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
-
         cfg.Host(host: queueSettings.Host);
 
         cfg.PrefetchCount = 32; // applies to all receive endpoints
@@ -100,6 +116,7 @@ builder.Services.AddMassTransit(mt =>
         cfg.ConfigureEndpoints(cntx);
     });
 });
+#endregion
 
 var app = builder.Build();
 
@@ -108,6 +125,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions()
+{
+    Predicate = (check) => check.Tags.Contains("health"),
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.UseHttpsRedirection();
 
