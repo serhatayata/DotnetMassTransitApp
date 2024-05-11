@@ -3,6 +3,7 @@ using DotnetMassTransitApp.Configuration.Consumers.Definitions;
 using MassTransit;
 using Shared.Queue.Contracts;
 using Shared.Queue.Models;
+using static MassTransit.Logging.OperationName;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -52,6 +53,9 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint(queueName: "notification-sms", ep =>
         {
             ep.ConfigureConsumer<NotificationSmsConsumer>(cntx);
+
+            // configure any required middleware components next
+            ep.UseMessageRetry(r => r.Interval(5, 1000));
         });
 
         cfg.ReceiveEndpoint(queueName: "change-like", ep =>

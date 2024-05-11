@@ -38,3 +38,38 @@ ConcurrentJobLimit	int				1				Number of concurrent executing jobs
 RetryPolicy			IRetryPolicy	None			How should failures be retried, if at all
 JobTypeName			string			Job Type		Override the default job type name used in the JobTypeSaga table (display one)
 
+
+//////// Retry Policies
+
+None: No retries
+Immediate: retry N times, with an optional exception filter
+Intervals: retry N times, with a pause between and an optional exception filter
+Incremental: retry N times, with an increasing pause between and an optional exception filter
+Exponential: retry N times, with an ever increasing pause between and an optional exception filter
+
+
+//////// Configuring Endpoints
+
+By default MassTransit requires no explicit configuration of endpoints, and can be created automatically by 
+calling ConfigureEndpoints. You can customize this behavior using ConsumerDefinition or by specifying the endpoint 
+configuration inline.
+
+
+//////// Consumer Configuration
+
+ConfigureConsumer<T>(context);
+
+ConfigureConsumer<T>(context, consumer => 
+{
+    // configure consumer-specific middleware
+});
+
+ConfigureConsumers(context);
+
+
+//////// Consumer Definitions
+
+Inside of a consumer definition you can control all of the definitions about a consumer and its associated endpoint.
+
+
+
