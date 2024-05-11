@@ -84,3 +84,35 @@ cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
    ep.DiscardFaultedMessages();
    ...
 ```
+
+As far as I see, If we use ReceiveEndpoint and queueName as paramete then RabbitMQ creates queue with this name, 
+but when we use as sample below, queue name would be "order-service-extreme-something-unique"
+
+```csharp
+mt.AddConsumer<SubmitOrderConsumer, SubmitOrderConsumerDefinition>()
+.Endpoint(e =>
+{
+    //If we don't use ReceiveEndpoint then this will be used
+    // override the default endpoint name
+    e.Name = "order-service-extreme";
+
+    // specify the endpoint as temporary (may be non-durable, auto-delete, etc.)
+    e.Temporary = false;
+
+    // specify an optional concurrent message limit for the consumer
+    e.ConcurrentMessageLimit = 8;
+
+    // only use if needed, a sensible default is provided, and a reasonable
+    // value is automatically calculated based upon ConcurrentMessageLimit if
+    // the transport supports it.
+    e.PrefetchCount = 16;
+
+    // set if each service instance should have its own endpoint for the consumer
+    // so that messages fan out to each instance.
+    e.InstanceId = "something-unique";
+
+    // If you want to prevent the consumer from creating topics/exchanges
+    // for consumed message types when started.
+    e.ConfigureConsumeTopology = false;
+});
+```
