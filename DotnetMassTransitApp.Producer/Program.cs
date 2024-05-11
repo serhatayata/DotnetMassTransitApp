@@ -37,7 +37,11 @@ builder.Services.AddMassTransit(mt =>
         EndpointConvention.Map<FinalizeOrderRequest>(new Uri("rabbitmq://localhost/finalize-order-request"));
         EndpointConvention.Map<CheckOrderStatus>(new Uri("rabbitmq://localhost/check-order-status"));
         EndpointConvention.Map<CancelOrder>(new Uri("rabbitmq://localhost/cancel-order"));
+        EndpointConvention.Map<RefundOrder>(new Uri("rabbitmq://localhost/refund-order"));
+        EndpointConvention.Map<NotificationSms>(new Uri("rabbitmq://localhost/notification-sms"));
+        EndpointConvention.Map<ChangeLike>(new Uri("rabbitmq://localhost/change-like"));
 
+        cfg.SendTopology.UseCorrelationId<NotificationSms>(x => x.OrderId);
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
     });
 });

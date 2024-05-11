@@ -360,4 +360,41 @@ public class ValuesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("notification-sms")]
+    public async Task<IActionResult> NotificationSmsMethod(CancellationToken cancellationToken)
+    {
+        await _sendEndpointProvider.Send(
+        new NotificationSms
+        {
+            OrderId = Guid.NewGuid()
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("change-like")]
+    public async Task<IActionResult> ChangeLikeMethod(CancellationToken cancellationToken)
+    {
+        await _sendEndpointProvider.Send(
+        new ChangeLike
+        {
+            ProductId = (new Random()).Next(1000, 9999),
+            IsPlus = true
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("refund-order")]
+    public async Task<IActionResult> RefundOrderMethod(CancellationToken cancellationToken)
+    {
+        await _sendEndpointProvider.Send(
+        new RefundOrder()
+        {
+            OrderId = Guid.NewGuid()
+        });
+
+        return Ok();
+    }
 }
