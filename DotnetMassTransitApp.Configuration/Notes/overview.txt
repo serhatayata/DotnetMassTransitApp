@@ -74,3 +74,21 @@ SerializerContentType ->	The default content type for sending/publishing message
 Some consumers only need to receive messages while connected, and any messages published while disconnected should be 
 discarded. This can be achieved by using a TemporaryEndpointDefinition to configure the receive endpoint.
 
+
+//////// Consumer Definition
+
+A consumer definition is used to configure the receive endpoint and pipeline behavior for the consumer. When scanning 
+assemblies or namespaces for consumers, consumer definitions are also found and added to the container. The 
+SubmitOrderConsumer and matching definition are shown below.
+
+
+//////// Endpoint Configuration
+
+To configure the endpoint for a consumer registration, or override the endpoint configuration in the definition, the Endpoint 
+method can be added to the consumer registration. This will create an endpoint definition for the consumer, and register it in 
+the container. This method is available on consumer and saga registrations, with separate execute and compensate endpoint 
+methods for activities.
+
+When the endpoint is configured after the AddConsumer method, the configuration then overrides the endpoint configuration in 
+the consumer definition. However, it cannot override the EndpointName if it is specified in the constructor.
+

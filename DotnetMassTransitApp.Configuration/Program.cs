@@ -1,4 +1,5 @@
 using DotnetMassTransitApp.Configuration.Consumers;
+using DotnetMassTransitApp.Configuration.Definitions;
 using MassTransit;
 using Shared.Queue.Models;
 
@@ -36,17 +37,43 @@ builder.Services.AddMassTransit(mt =>
 {
     mt.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(prefix: "", includeNamespace: false));
 
-    mt.AddConsumer<SubmitOrderConsumer>();
+    mt.AddConsumer<SubmitOrderConsumer, SubmitOrderConsumerDefinition>()
+      .Endpoint(e =>
+      {
+          //If we don't use ReceiveEndpoint then this will be used
+
+          // override the default endpoint name
+          e.Name = "order-service-extreme";
+
+          // specify the endpoint as temporary (may be non-durable, auto-delete, etc.)
+          e.Temporary = false;
+
+          // specify an optional concurrent message limit for the consumer
+          e.ConcurrentMessageLimit = 8;
+
+          // only use if needed, a sensible default is provided, and a reasonable
+          // value is automatically calculated based upon ConcurrentMessageLimit if
+          // the transport supports it.
+          e.PrefetchCount = 16;
+
+          // set if each service instance should have its own endpoint for the consumer
+          // so that messages fan out to each instance.
+          e.InstanceId = "something-unique";
+
+          // If you want to prevent the consumer from creating topics/exchanges
+          // for consumed message types when started.
+          e.ConfigureConsumeTopology = false;
+      });
     //.ExcludeFromConfigureEndpoints();
 
-    mt.AddConfigureEndpointsCallback((name, cfg) =>
-    {
-        // To conditionally apply transport-specific settings, the cfg parameter can be pattern-matched to the transport type
-        if (cfg is IRabbitMqReceiveEndpointConfigurator rmq)
-            rmq.SetQuorumQueue(3);
+    //mt.AddConfigureEndpointsCallback((name, cfg) =>
+    //{
+    //    // To conditionally apply transport-specific settings, the cfg parameter can be pattern-matched to the transport type
+    //    if (cfg is IRabbitMqReceiveEndpointConfigurator rmq)
+    //        rmq.SetQuorumQueue(3);
 
-        cfg.UseMessageRetry(r => r.Immediate(2));
-    });
+    //    cfg.UseMessageRetry(r => r.Immediate(2));
+    //});
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -56,19 +83,19 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.PrefetchCount = 32; // applies to all receive endpoints
 
-        //cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
-        //{
-        //    ep.ConcurrentMessageLimit = 28; // only applies to this endpoint
-        //    ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
-
-        //    // When using ConfigureConsumer with a consumer that has a definition, the EndpointName, PrefetchCount,
-        //    // and Temporary properties of the consumer definition are not used.
-        //});
-
-        cfg.ReceiveEndpoint(new TemporaryEndpointDefinition(), ep =>
+        cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
         {
+            ep.ConcurrentMessageLimit = 28; // only applies to this endpoint
             ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+
+            // When using ConfigureConsumer with a consumer that has a definition, the EndpointName, PrefetchCount,
+            // and Temporary properties of the consumer definition are not used.
         });
+
+        //cfg.ReceiveEndpoint(new TemporaryEndpointDefinition(), ep =>
+        //{
+        //    ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        //});
 
         cfg.ConfigureEndpoints(cntx);
     });

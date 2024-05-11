@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Shared.Queue.Contracts;
-using Shared.Queue.Events;
 
 namespace DotnetMassTransitApp.Configuration.Consumers;
 
