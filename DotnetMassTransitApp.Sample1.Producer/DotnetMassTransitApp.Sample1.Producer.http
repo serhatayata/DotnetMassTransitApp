@@ -1,0 +1,6 @@
+@DotnetMassTransitApp.Sample1.Producer_HostAddress = http://localhost:5225
+
+GET {{DotnetMassTransitApp.Sample1.Producer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
