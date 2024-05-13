@@ -21,12 +21,18 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
         {
-            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
-            ep.Bind(exchangeName: "sample1-exchange-submit-order", opt =>
+            ep.Bind(exchangeName: "submit-order-exchange", opt =>
             {
-                opt.RoutingKey = "sample1-routing-submit-order.#";
+                //opt.RoutingKey = "sample1-routing-submit-order.#";
+                opt.ExchangeType = "topic";
+                opt.AutoDelete = false;
+                opt.Durable = true;
             });
+
+            ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
         });
+
+        cfg.ConfigureEndpoints(cntx);
     });
 });
 

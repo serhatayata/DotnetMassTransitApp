@@ -33,7 +33,7 @@ builder.Services.AddMassTransit(mt =>
             opt.AutoDelete = false;
             opt.Durable = true;
 
-            // If we want to create queue and exchange here, then we use this
+            //If we want to create queue and exchange here, then we use this
             //opt.BindQueue(exchangeName: "sample1-exchange-submit-order",
             //              queueName: "sample1-queue-submit-order",
             //              queueOpt =>
