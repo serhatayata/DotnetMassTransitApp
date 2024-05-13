@@ -27,4 +27,20 @@ public class ValuesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("topic-exchange-routing-key")]
+    public async Task<IActionResult> TopicExchangeRoutingKeyMethod()
+    {
+        await _publishEndpoint.Publish(
+        new SubmitOrder
+        {
+            OrderId = Guid.NewGuid()
+        },
+        p =>
+        {
+            p.SetRoutingKey("sample1-routing-submit-order.type-1");
+        });
+
+        return Ok();
+    }
 }

@@ -23,7 +23,7 @@ builder.Services.AddMassTransit(mt =>
         {
             ep.Bind(exchangeName: "submit-order-exchange", opt =>
             {
-                //opt.RoutingKey = "sample1-routing-submit-order.#";
+                opt.RoutingKey = "sample1-routing-submit-order.#";
                 opt.ExchangeType = "topic";
                 opt.AutoDelete = false;
                 opt.Durable = true;
