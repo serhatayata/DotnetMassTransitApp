@@ -50,7 +50,8 @@ public class ValuesController : ControllerBase
     [HttpGet("direct-exchange")]
     public async Task<IActionResult> DirectExchangeMethod()
     {
-        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("exchange:change-like-exchange?type=direct"));
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(
+            new Uri("exchange:change-like-exchange?type=direct&routingKey=change-like-routing-key"));
 
         await endpoint.Send(
         new ChangeLike

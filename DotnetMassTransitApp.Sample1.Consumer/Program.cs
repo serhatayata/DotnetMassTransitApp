@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMassTransit(mt =>
 {
     mt.AddConsumer<SubmitOrderConsumer>();
+    mt.AddConsumer<ChangeLikeConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -30,6 +31,19 @@ builder.Services.AddMassTransit(mt =>
             });
 
             ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
+        });
+
+        cfg.ReceiveEndpoint(queueName: "change-like", ep =>
+        {
+            ep.ExchangeType = "direct";
+            ep.Bind(exchangeName: "change-like-exchange", opt =>
+            {
+                opt.ExchangeType = "direct";
+                opt.AutoDelete = false;
+                opt.Durable = true;
+            });
+
+            ep.ConfigureConsumer<ChangeLikeConsumer>(cntx);
         });
 
         cfg.ConfigureEndpoints(cntx);
