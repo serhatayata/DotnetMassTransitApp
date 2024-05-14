@@ -9,16 +9,13 @@ namespace DotnetMassTransitApp.Sample1.Producer.Controllers;
 public class ValuesController : ControllerBase
 {
     private readonly IPublishEndpoint _publishEndpoint;
-    private readonly ISendEndpoint _sendEndpoint;
     private readonly ISendEndpointProvider _sendEndpointProvider;
 
     public ValuesController(
         IPublishEndpoint publishEndpoint,
-        ISendEndpoint sendEndpoint,
         ISendEndpointProvider sendEndpointProvider)
     {
         _publishEndpoint = publishEndpoint;
-        _sendEndpoint = sendEndpoint;
         _sendEndpointProvider = sendEndpointProvider;
     }
 
@@ -60,6 +57,18 @@ public class ValuesController : ControllerBase
         {
             ProductId = (new Random()).Next(1000, 99999999),
             IsPlus = true
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("fanout-exchange")]
+    public async Task<IActionResult> FanoutExchangeMethod()
+    {
+        await _publishEndpoint.Publish(
+        new RefundOrder
+        {
+            OrderId = Guid.NewGuid()
         });
 
         return Ok();

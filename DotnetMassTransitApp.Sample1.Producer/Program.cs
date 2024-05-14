@@ -43,6 +43,19 @@ builder.Services.AddMassTransit(mt =>
             //              });
         });
 
+        // Fanout Exchange
+        cfg.Message<RefundOrder>(x =>
+        {
+            x.SetEntityName("refund-order-exchange");
+        });
+
+        cfg.Publish<RefundOrder>(opt =>
+        {
+            opt.ExchangeType = "fanout";
+            opt.AutoDelete = false;
+            opt.Durable = true;
+        });
+
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
         cfg.ConfigureEndpoints(cntx);
