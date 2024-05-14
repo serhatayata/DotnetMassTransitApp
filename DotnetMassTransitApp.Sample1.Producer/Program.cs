@@ -56,6 +56,19 @@ builder.Services.AddMassTransit(mt =>
             opt.Durable = true;
         });
 
+        //Header exchange
+        cfg.Message<NotificationSms>(x =>
+        {
+            x.SetEntityName("notification-sms-exchange");
+        });
+
+        cfg.Publish<NotificationSms>(opt =>
+        {
+            opt.ExchangeType = "headers";
+            opt.AutoDelete = false;
+            opt.Durable = true;
+        });
+
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
         cfg.ConfigureEndpoints(cntx);

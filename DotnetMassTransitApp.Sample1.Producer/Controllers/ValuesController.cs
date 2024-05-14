@@ -73,4 +73,27 @@ public class ValuesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("headers-exchange")]
+    public async Task<IActionResult> HeadersExchangeMethod()
+    {
+        var headers = new Dictionary<string, object>
+        {
+            { "key1", "value1" },
+            { "key2", "value2" }
+        };
+
+        await _publishEndpoint.Publish(
+        new NotificationSms
+        {
+            OrderId = Guid.NewGuid()
+        },
+        context =>
+        {
+            foreach (var header in headers)
+                context.Headers.Set(header.Key, header.Value);
+        });
+
+        return Ok();
+    }
 }
