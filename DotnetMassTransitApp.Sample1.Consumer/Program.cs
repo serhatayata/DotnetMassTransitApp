@@ -13,6 +13,7 @@ builder.Services.AddMassTransit(mt =>
 {
     mt.AddConsumer<SubmitOrderConsumer>();
     mt.AddConsumer<ChangeLikeConsumer>();
+    mt.AddConsumer<RefundOrderConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -20,6 +21,7 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.Host(host: queueSettings.Host);
 
+        // Topic exchange consumer
         cfg.ReceiveEndpoint(queueName: "submit-order", ep =>
         {
             ep.Bind(exchangeName: "submit-order-exchange", opt =>
@@ -33,6 +35,7 @@ builder.Services.AddMassTransit(mt =>
             ep.ConfigureConsumer<SubmitOrderConsumer>(cntx);
         });
 
+        // Direct exchange consumer
         cfg.ReceiveEndpoint(queueName: "change-like", ep =>
         {
             ep.ExchangeType = "direct";
@@ -45,6 +48,21 @@ builder.Services.AddMassTransit(mt =>
 
             ep.ConfigureConsumer<ChangeLikeConsumer>(cntx);
         });
+
+        // Fanout exchange consumer
+
+        cfg.ReceiveEndpoint(queueName: "refund-order", ep =>
+        {
+            ep.ConfigureConsumer<RefundOrderConsumer>(cntx);
+
+            ep.Bind(exchangeName: "refund-order-exchange", clb =>
+            {
+                clb.ExchangeType = "fanout";
+                clb.AutoDelete = false;
+                clb.Durable = true;
+            });
+        });
+
 
         cfg.ConfigureEndpoints(cntx);
     });
