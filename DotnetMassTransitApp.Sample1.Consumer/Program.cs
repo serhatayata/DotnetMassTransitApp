@@ -1,6 +1,8 @@
 using DotnetMassTransitApp.Sample1.Consumer.Consumers;
 using MassTransit;
+using Shared.Queue.Contracts;
 using Shared.Queue.Models;
+using static MassTransit.Logging.OperationName;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -14,6 +16,7 @@ builder.Services.AddMassTransit(mt =>
     mt.AddConsumer<SubmitOrderConsumer>();
     mt.AddConsumer<ChangeLikeConsumer>();
     mt.AddConsumer<RefundOrderConsumer>();
+    mt.AddConsumer<NotificationSmsConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -63,6 +66,23 @@ builder.Services.AddMassTransit(mt =>
             });
         });
 
+        // Headers exchange consumer
+
+        cfg.ReceiveEndpoint(queueName: "notification-sms", ep =>
+        {
+            // Configure the consumer for the endpoint
+            ep.ConfigureConsumer<NotificationSmsConsumer>(cntx);
+
+            // Bind the headers exchange to the queue
+            ep.Bind("notification-sms-exchange", opt =>
+            {
+                // Specify the exchange type as "headers"
+                opt.ExchangeType = "headers";
+                // Additional binding options
+                opt.AutoDelete = false;
+                opt.Durable = true;
+            });
+        });
 
         cfg.ConfigureEndpoints(cntx);
     });
