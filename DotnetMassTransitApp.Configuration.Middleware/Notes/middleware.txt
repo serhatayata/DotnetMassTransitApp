@@ -1,0 +1,41 @@
+﻿MassTransit is built using a network of pipes and filters to dispatch messages. A pipe is composed of a series of filters, 
+each of which is a key atom and are described below.
+
+Middleware components are configured using extension methods on any pipe configurator IPipeConfigurator<T>, and the 
+extension methods all begin with Use to separate them from other methods.
+
+To understand how middleware components are built, an understanding of filters and pipes is needed.
+
+//////// Filters
+
+A filter is a middleware component that performs a specific function, and should adhere to the single responsibility 
+principal – do one thing, one thing only (and hopefully do it well). By sticking to this approach, developers are able to 
+opt-in to each behavior without including unnecessary or unwatched functionality.
+
+There are many filters included with GreenPipes, and a whole lot more of them are included with MassTransit. In fact, the 
+entire MassTransit message flow is built around pipes and filters.
+
+Developers can create their own filters. To create a filter, create a class that implements IFilter<T>.
+
+Probe, The Probe method is used to interrogate the filter about its behavior. This should describe the filter in a way that 
+a developer would understand its role when looking at a network graph.
+
+The Send method is used to send contexts through the pipe to each filter. Context is the actual context, and next is used 
+to pass the context to the next filter in the pipe. Send returns a Task, and should always follow the .NET guidelines 
+for asynchronous methods.
+
+
+//////// Creating Filters
+
+To be consistent with MassTransit conventions, middleware configuration methods should start with Use.
+Middleware components are configured using extension methods, to make them easy to discover.
+
+The extension method creates the pipe specification for the middleware component, which can be added to any pipe. For 
+a component on the message consumption pipeline, use ConsumeContext instead of any PipeContext.
+
+The pipe specification is a class that adds the filter to the pipeline. Additional logic can be included, such as 
+configuring optional settings, etc. using a closure syntax similar to the other configuration classes in MassTransit.
+
+Finally, the middleware component itself is a filter added to the pipeline. All filters have absolute and complete control 
+of the execution context and flow of the message. Pipelines are entirely asynchronous, and expect that asynchronous 
+operations will be performed.
