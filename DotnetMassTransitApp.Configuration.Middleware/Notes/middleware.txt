@@ -39,3 +39,10 @@ configuring optional settings, etc. using a closure syntax similar to the other 
 Finally, the middleware component itself is a filter added to the pipeline. All filters have absolute and complete control 
 of the execution context and flow of the message. Pipelines are entirely asynchronous, and expect that asynchronous 
 operations will be performed.
+
+
+//////// Message Type Filters
+
+In many cases, the message type is used by a filter. To create an instance of a generic filter that includes the message 
+type, use the configuration observer.
+

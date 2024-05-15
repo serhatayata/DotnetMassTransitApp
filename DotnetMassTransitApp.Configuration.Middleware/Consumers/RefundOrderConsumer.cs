@@ -7,6 +7,6 @@ public class RefundOrderConsumer : IConsumer<RefundOrder>
 {
     public Task Consume(ConsumeContext<RefundOrder> context)
     {
-        throw new NullReferenceException();
+        return Task.CompletedTask;
     }
 }

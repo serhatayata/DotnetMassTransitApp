@@ -25,7 +25,7 @@ builder.Services.AddMassTransit(mt =>
         cfg.ReceiveEndpoint(queueName: "refund-order", ep =>
         {
             ep.ConfigureConsumer<RefundOrderConsumer>(cntx);
-
+            ep.UseMessageFilter();
             ep.Bind(exchangeName: "refund-order-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
