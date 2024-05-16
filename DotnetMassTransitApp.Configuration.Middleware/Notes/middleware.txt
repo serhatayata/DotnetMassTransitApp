@@ -129,3 +129,13 @@ ActiveThreshold		That must reach the circuit breaker in a tracking period before
 
 ResetInterval		The period of time between the circuit breaker trip and the first attempt to close the circuit breaker. Messages				   that reach the circuit breaker during the open period will immediately fail with the same exception that						   tripped the circuit breaker.
 
+//////// Rate Limiter
+
+A rate limiter is used to restrict the number of messages processed within a time period. The reason may be that an API or 
+service only accepts a certain number of calls per minute, and will delay any subsequent attempts until the rate limiting period 
+has expired.
+
+NOTE : The rate limiter will delay message delivery until the rate limit expires, so it is best to avoid large time windows and keep
+the rate limits sane. Something like 1000 over 10 minutes is a bad idea, versus 100 over a minute. Try to adjust the values and 
+see what works for you.
+
