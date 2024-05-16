@@ -34,6 +34,20 @@ builder.Services.AddMassTransit(mt =>
             });
         });
 
+        // In the above example, the kill switch will activate after 10 messages have been consumed. If the ratio of failures/    attempts exceeds 15%, the kill switch will trip and stop the receive endpoint. After 1 minute, the receive endpoint    will be restarted. Once restarted, if exceptions are still observed, the receive endpoint will be stopped again for 1  minute.
+        cfg.UseKillSwitch(options => options
+           .SetActivationThreshold(10)
+           .SetTripThreshold(0.15)
+           .SetRestartTimeout(m: 1));
+
+        cfg.UseCircuitBreaker(cb =>
+        {
+            cb.TrackingPeriod = TimeSpan.FromMinutes(1);
+            cb.TripThreshold = 15;
+            cb.ActiveThreshold = 10;
+            cb.ResetInterval = TimeSpan.FromMinutes(5);
+        });
+
         cfg.UseExceptionLogger();
 
         cfg.ConfigureEndpoints(cntx);
