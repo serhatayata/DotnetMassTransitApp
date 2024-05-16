@@ -46,3 +46,49 @@ operations will be performed.
 In many cases, the message type is used by a filter. To create an instance of a generic filter that includes the message 
 type, use the configuration observer.
 
+
+//////// Pipes
+
+Filters are combined in sequence to form a pipe. A pipe configurator, along with a pipe builder, is used to configure and build 
+a pipe.
+
+The IPipe interface is similar to IFilter, but a pipe hides the next parameter as it is part of the pipe's structure. It is 
+the pipe's responsibility to pass the appropriate next parameter to the individual filters in the pipe.
+
+
+//////// PipeContext
+
+The context type has a PipeContext constraint, which is another core atom in GreenPipes. A pipe context can include payloads, 
+which are kept in a last-in, first-out (LIFO) collection. Payloads are identified by type, and can be retrieved, added, and 
+updated using the PipeContext methods
+
+The payload methods are also used to check if a pipe context is another type of context. For example, to see if the SendContext is 
+a RabbitMqSendContext, the TryGetPayload method should be used instead of trying to pattern match or cast the context parameter.
+
+
+//////// Middleware Filters
+
+//////// Kill Switch
+
+A Kill Switch is used to prevent failing consumers from moving all the messages from the input queue to the error queue. 
+By monitoring message consumption and tracking message successes and failures, a Kill Switch stops the receive endpoint when a 
+trip threshold has been reached.
+
+Typically, consumer exceptions are transient issues and suspending consumption until a later time when the transient issue may 
+have been resolved.
+
+- Dynamic Control: The Kill Switch allows you to control message consumption dynamically at runtime. You can activate or 
+deactivate the Kill Switch on a receive endpoint programmatically or through management interfaces without redeploying or 
+restarting the application.
+
+- Endpoint Suspension: When the Kill Switch is activated for a receive endpoint, MassTransit stops consuming messages from 
+the associated queue or exchange. Incoming messages are no longer processed by the consumers configured on the endpoint, 
+effectively pausing message processing.
+
+- Graceful Shutdown: When the Kill Switch is deactivated, message consumption resumes, and the endpoint returns to normal 
+operation. MassTransit ensures a graceful transition, allowing existing message processing tasks to complete and preventing 
+message loss or disruption.
+
+- Operational Flexibility: The Kill Switch feature provides operational flexibility, allowing you to manage message 
+consumption dynamically in response to changing conditions, such as maintenance activities, system upgrades, or 
+performance degradation.
