@@ -139,3 +139,14 @@ NOTE : The rate limiter will delay message delivery until the rate limit expires
 the rate limits sane. Something like 1000 over 10 minutes is a bad idea, versus 100 over a minute. Try to adjust the values and 
 see what works for you.
 
+
+//////// Concurrency Limit
+
+The concurrency limit filter has been deprecated for most scenarios, developers should instead specify a ConcurrentMessageLimit 
+at the bus, endpoint, or consumer level to limit the number of messages processed concurrently.
+
+The concurrency limit refers to the maximum number of message processing tasks that can be executed concurrently by a consumer. 
+It controls the degree of parallelism for message processing, limiting the number of messages that can be processed 
+simultaneously by a consumer instance.
+
+

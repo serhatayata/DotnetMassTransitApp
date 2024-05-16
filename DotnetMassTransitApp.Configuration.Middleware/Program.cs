@@ -36,6 +36,8 @@ builder.Services.AddMassTransit(mt =>
 
         cfg.UseRateLimit(1000, TimeSpan.FromSeconds(5));
 
+        cfg.UseConcurrencyLimit(4);
+
         // In the above example, the kill switch will activate after 10 messages have been consumed. If the ratio of failures/    attempts exceeds 15%, the kill switch will trip and stop the receive endpoint. After 1 minute, the receive endpoint    will be restarted. Once restarted, if exceptions are still observed, the receive endpoint will be stopped again for 1  minute.
         cfg.UseKillSwitch(options => options
            .SetActivationThreshold(10)
