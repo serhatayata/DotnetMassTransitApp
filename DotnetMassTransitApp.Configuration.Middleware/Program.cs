@@ -1,5 +1,6 @@
 using DotnetMassTransitApp.Configuration.Middleware.Consumers;
 using DotnetMassTransitApp.Configuration.Middleware.Extensions;
+using DotnetMassTransitApp.Configuration.Middleware.Filters;
 using MassTransit;
 using Shared.Queue.Models;
 
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMassTransit(mt =>
 {
     mt.AddConsumer<RefundOrderConsumer>();
+    mt.AddConsumer<StartDeliveryConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -25,8 +27,21 @@ builder.Services.AddMassTransit(mt =>
         cfg.ReceiveEndpoint(queueName: "refund-order", ep =>
         {
             ep.ConfigureConsumer<RefundOrderConsumer>(cntx);
-            ep.UseMessageFilter();
+            //ep.UseMessageFilter();
             ep.Bind(exchangeName: "refund-order-exchange", clb =>
+            {
+                clb.ExchangeType = "fanout";
+                clb.AutoDelete = false;
+                clb.Durable = true;
+            });
+
+            //ep.UseConsumeFilter(typeof(MyConsumeFilter<>), cntx);
+        });
+
+        cfg.ReceiveEndpoint(queueName: "start-delivery-order", ep =>
+        {
+            ep.ConfigureConsumer<StartDeliveryConsumer>(cntx);
+            ep.Bind(exchangeName: "start-delivery-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
                 clb.AutoDelete = false;
@@ -51,6 +66,11 @@ builder.Services.AddMassTransit(mt =>
             cb.ActiveThreshold = 10;
             cb.ResetInterval = TimeSpan.FromMinutes(5);
         });
+
+        // To configure a scoped filter for a specific message type (or types) and configure it on all receive endpoints:
+        cfg.UseConsumeFilter<MyMessageConsumeFilter>(cntx);
+
+        cfg.UseConsumeFilter(typeof(MyCommandFilter<>)
 
         cfg.UseExceptionLogger();
 

@@ -150,3 +150,14 @@ It controls the degree of parallelism for message processing, limiting the numbe
 simultaneously by a consumer instance.
 
 
+//////// Scoped Middleware Filters
+
+///// Scoped Filters
+
+Most of the built-in filters are created and added to the pipeline during configuration. This approach is typically 
+sufficient, however, there are scenarios where the filter needs access to other components at runtime.
+
+Using a scoped filter allows a new filter instance to be resolved from the container for each message. If a current scope is 
+not available, a new scope will be created using the root container.
+
+

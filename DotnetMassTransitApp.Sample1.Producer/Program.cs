@@ -56,6 +56,20 @@ builder.Services.AddMassTransit(mt =>
             opt.Durable = true;
         });
 
+        /////
+
+        cfg.Message<StartDelivery>(x =>
+        {
+            x.SetEntityName("start-delivery-exchange");
+        });
+
+        cfg.Publish<StartDelivery>(opt =>
+        {
+            opt.ExchangeType = "fanout";
+            opt.AutoDelete = false;
+            opt.Durable = true;
+        });
+
         //Header exchange
         cfg.Message<NotificationSms>(x =>
         {

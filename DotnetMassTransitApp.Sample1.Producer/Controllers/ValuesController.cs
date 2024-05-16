@@ -75,6 +75,19 @@ public class ValuesController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("fanout-exchange-start-delivery")]
+    public async Task<IActionResult> FanoutExchangeStartDeliveryMethod()
+    {
+        await _publishEndpoint.Publish(
+        new StartDelivery
+        {
+            OrderId = Guid.NewGuid(),
+            CreationTime = DateTime.Now
+        });
+
+        return Ok();
+    }
+
     [HttpGet("headers-exchange")]
     public async Task<IActionResult> HeadersExchangeMethod()
     {
