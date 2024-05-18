@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Sample1.Consumer", "DotnetMassTransitApp.Sample1.Consumer\DotnetMassTransitApp.Sample1.Consumer.csproj", "{39063B91-D34E-4A54-8D41-42E0576A1D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Configuration.Middleware", "DotnetMassTransitApp.Configuration.Middleware\DotnetMassTransitApp.Configuration.Middleware.csproj", "{DFC2BD78-5195-4B24-83D5-00F29D841B2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Configuration.Middleware", "DotnetMassTransitApp.Configuration.Middleware\DotnetMassTransitApp.Configuration.Middleware.csproj", "{DFC2BD78-5195-4B24-83D5-00F29D841B2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Configuration.Topology", "DotnetMassTransitApp.Configuration.Topology\DotnetMassTransitApp.Configuration.Topology.csproj", "{1B331C01-1722-4C37-8A94-4684A83DF04E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{DFC2BD78-5195-4B24-83D5-00F29D841B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFC2BD78-5195-4B24-83D5-00F29D841B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFC2BD78-5195-4B24-83D5-00F29D841B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
