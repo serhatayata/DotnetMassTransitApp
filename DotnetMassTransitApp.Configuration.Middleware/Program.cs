@@ -2,7 +2,10 @@ using DotnetMassTransitApp.Configuration.Middleware.Consumers;
 using DotnetMassTransitApp.Configuration.Middleware.Extensions;
 using DotnetMassTransitApp.Configuration.Middleware.Filters;
 using MassTransit;
+using MassTransit.Internals;
+using Shared.Queue.Contracts;
 using Shared.Queue.Models;
+using System.Windows.Input;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -70,7 +73,8 @@ builder.Services.AddMassTransit(mt =>
         // To configure a scoped filter for a specific message type (or types) and configure it on all receive endpoints:
         cfg.UseConsumeFilter<MyMessageConsumeFilter>(cntx);
 
-        cfg.UseConsumeFilter(typeof(MyCommandFilter<>)
+        cfg.UseConsumeFilter(typeof(MyCommandFilter<>), cntx,
+            x => x.Include(type => type.HasInterface<ICommandFilter>()));
 
         cfg.UseExceptionLogger();
 

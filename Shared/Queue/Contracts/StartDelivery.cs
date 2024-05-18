@@ -1,6 +1,8 @@
-﻿namespace Shared.Queue.Contracts;
+﻿using System.Windows.Input;
 
-public class StartDelivery
+namespace Shared.Queue.Contracts;
+
+public class StartDelivery : ICommandFilter
 {
     public StartDelivery()
     {

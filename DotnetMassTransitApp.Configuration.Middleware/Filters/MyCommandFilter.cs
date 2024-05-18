@@ -1,11 +1,11 @@
 ﻿using MassTransit;
-using System.Windows.Input;
+using Shared.Queue.Contracts;
 
 namespace DotnetMassTransitApp.Configuration.Middleware.Filters;
 
 public class MyCommandFilter<T> :
     IFilter<ConsumeContext<T>>
-    where T : class, ICommand
+    where T : class, ICommandFilter
 {
     public void Probe(ProbeContext context)
     {
