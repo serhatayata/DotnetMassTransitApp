@@ -1,0 +1,82 @@
+﻿In MassTransit, Topology is how message types are used to configure broker topics (exchanges in RabbitMQ) and queues. 
+
+Topology is also used to access specific broker capabilities, such as RabbitMQ direct exchanges and routing keys.
+
+Topology is separate from the send, publish, and consume pipelines which are focused more on middleware inside 
+MassTransit. Topology allows conventions to be created that can apply message-specific topology configuration at runtime 
+as messages are published and sent.
+
+//////// Bus
+
+Once the bus is created, access to topology is via the Topology property on IBus. The message, publish, and send topologies 
+are accessible on this interface. It is also possible to retrieve a message's publish address. The Topology property may 
+support other interfaces, such as a transport-specific host topology.
+
+//////// Send
+
+Topology does not cover sending messages beyond delivering messages to a queue. MassTransit sends messages via a send 
+endpoint, which is retrieved using the endpoint's address only.
+
+The exception to this is when the transport supports additional capabilities on send, such as the partitioning of messages. 
+With RabbitMQ this would include specifying the RoutingKey, and with Azure Service Bus this would include specifying 
+the PartitionId or the SessionId.
+
+Topology cannot alter the destination of a message, only the properties of the message delivery itself. Determining the path 
+of a message is routing, which is handled separately.
+
+//////// Publish
+
+Topology is a key part of publishing messages, and is responsible for how the broker's facilities are configured.
+
+The publish topology defines many aspects of broker configuration, including:
+- RabbitMQ Exchange names or Azure Service Bus Topic names
+  - Formatted, based upon the message type
+  - Explicit, based upon the configuration
+- RabbitMQ Exchange Bindings or Azure Service Bus Topic Subscriptions
+When Publish is called, the topology is also used to:
+- Populate the RoutingKey of the message sent to the RabbitMQ exchange
+- Populate the PartitionId or SessionId of the message sent to the Azure Service Bus topic
+
+//////// Consume
+
+Each receive endpoint has a consume topology, which is configured as consumers are added. Depending upon the 
+transport, additional methods may be available to support exchange bindings, topic subscriptions, etc.
+
+Consume topology uses the publish topology to ensure consistent naming of exchanges/topics for message types.
+
+
+//////// Message Topology
+
+Message types are extensively leveraged in MassTransit, so making it easy to configure how those message types are used 
+by topology seemed obvious.
+
+//////// Entity Name Formatters
+///// Message Type
+
+MassTransit has built-in defaults for naming messaging entities (these are things like exchanges, topics, etc.). The 
+defaults can be overridden as well. For instance, to change the topic name used by a message, just do it!
+
+
+//////// Attributes
+
+//// EntityName
+EntityName is an optional attribute used to override the default entity name for a message type. If present, the entity 
+name will be used when creating the topic or exchange for the message.
+
+//// ConfigureConsumeTopology
+
+ConfigureConsumeTopology is an optional attribute that may be specified on a message type to indicate whether the topic 
+or exchange for the message type should be created and subscribed to the queue when consumed on a receive endpoint.
+
+- ConfigureConsumeTopology(true) (default): This setting means that MassTransit will automatically configure the 
+necessary consume topology for the message type.
+
+- ConfigureConsumeTopology(false): This setting tells MassTransit not to configure any topology for the message type, which 
+can be useful in scenarios where you want to manually manage the broker's infrastructure or when using certain 
+advanced configurations.
+
+//// ExcludeFromTopology
+
+The ExcludeFromTopology attribute in MassTransit is used to indicate that a message type should not be included in the 
+automatic topology configuration. This means that when this attribute is applied to a message type, MassTransit will 
+not automatically create exchanges, queues, or bindings for this message type when configuring the broker's topology.
