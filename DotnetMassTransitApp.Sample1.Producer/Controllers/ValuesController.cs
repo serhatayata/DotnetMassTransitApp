@@ -110,4 +110,20 @@ public class ValuesController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("send-start-delivery")]
+    public async Task<IActionResult> SendStartDeliveryMethod()
+    {
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(
+            new Uri("exchange:start-delivery-direct-exchange?type=direct&routingKey=start-delivery-routing-key"));
+
+        await endpoint.Send(
+        new StartDelivery
+        {
+            OrderId = Guid.NewGuid(),
+            CreationTime = DateTime.Now
+        });
+
+        return Ok();
+    }
 }

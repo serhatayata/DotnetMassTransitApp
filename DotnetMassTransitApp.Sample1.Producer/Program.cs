@@ -1,3 +1,4 @@
+using DotnetMassTransitApp.Sample1.Producer.Filters;
 using MassTransit;
 using MassTransit.Transports.Fabric;
 using Shared.Queue.Contracts;
@@ -81,6 +82,11 @@ builder.Services.AddMassTransit(mt =>
             opt.ExchangeType = "headers";
             opt.AutoDelete = false;
             opt.Durable = true;
+        });
+
+        cfg.ConfigureSend(opt =>
+        {
+            opt.UseFilter(new MySendFilter<StartDelivery>());
         });
 
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
