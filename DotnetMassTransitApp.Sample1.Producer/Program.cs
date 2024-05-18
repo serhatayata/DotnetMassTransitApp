@@ -89,6 +89,8 @@ builder.Services.AddMassTransit(mt =>
             opt.UseFilter(new MySendFilter<StartDelivery>());
         });
 
+        cfg.UsePublishFilter(typeof(MyPublishFilter<>), cntx);
+
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
         cfg.ConfigureEndpoints(cntx);
