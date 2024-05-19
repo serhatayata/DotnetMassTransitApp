@@ -90,3 +90,50 @@ A basic example of a convention is the default CorrelationId convention, which i
 As message types are sent, the convention is used to determine if the message contains a property that could be considered 
 a CorrelationId, and uses that property to set the CorrelationId header on the message envelope.
 
+//////// Deploy Topology
+
+In MassTransit, the "deploy topology" refers to the process and configuration for setting up the necessary infrastructure on 
+the message broker (such as RabbitMQ) to support messaging between producers and consumers. This includes creating 
+exchanges, queues, and bindings as defined by the configuration and conventions.
+
+Tabii ki, MassTransit'de "deploy topology" (topoloji dağıtımı), mesaj göndericileri (producers) ve alıcılar (consumers) arasında mesajlaşmayı desteklemek için mesaj broker'ında (örneğin RabbitMQ) gerekli altyapının kurulması ve yapılandırılması sürecini ifade eder. Bu, tanımlanan yapılandırma ve kurallara göre değişimlerin, kuyrukların ve bağlamaların (bindings) oluşturulmasını içerir.
+
+//// Topoloji Dağıtımının Temel Kavramları
+- Exchanges: Routing mechanisms where producers send messages. Exchanges can be of different types, such as direct, fanout, 
+topic, or headers.
+	
+- Queues: Storage for messages until they are consumed. Consumers read messages from queues.
+
+- Bindings: Links between exchanges and queues that determine how messages are routed from exchanges to queues based on routing 
+keys or other criteria.
+
+- Message Types: Different types of messages can be configured to have specific exchanges, queues, and bindings.
+
+//// Deploy Topology Process
+The deploy topology process in MassTransit involves automatically creating or updating the necessary exchanges, queues, and 
+bindings based on the message types and configuration provided by the developer. This is done to ensure that the 
+infrastructure required for message routing and handling is in place before any messages are sent or consumed.
+
+//// Configuring Topology in MassTransit
+MassTransit provides various configuration options to control how the topology is deployed. Here's a summary of some 
+important aspects:
+
+- Automatic Topology Configuration
+By default, MassTransit automatically configures the topology based on the message types and endpoints you define. This 
+includes creating exchanges and queues with names derived from the message types.
+
+- Excluding Messages from Topology
+You can exclude certain messages from the topology configuration if you want to manage those manually. This is done using 
+the ExcludeFromTopology attribute or specific configuration settings.
+
+- Deploy topology refers to the process of setting up exchanges, queues, and bindings in the message broker.
+- Automatic configuration ensures necessary infrastructure is created based on message types and endpoint configurations.
+- Customization allows specifying names and settings for exchanges and queues.
+- Exclusion can be used to manually manage certain parts of the topology.
+- Manual deployment provides control over when the topology is set up.
+
+//// Benefits of Using DeployTopologyAsync
+
+- Ensures Readiness: Guarantees that the necessary RabbitMQ infrastructure is in place before any message processing begins.
+- Error Handling: Allows for handling any topology deployment errors separately from message processing logic.
+- Environment Setup: Useful for setting up and tearing down environments, especially in automated testing and CI/CD pipelines.
