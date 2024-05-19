@@ -1,0 +1,6 @@
+@DotnetMassTransitApp.Configuration.Integrations.SignalR.API_HostAddress = http://localhost:5257
+
+GET {{DotnetMassTransitApp.Configuration.Integrations.SignalR.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
