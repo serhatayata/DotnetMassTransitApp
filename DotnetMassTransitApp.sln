@@ -27,6 +27,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Config
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Configuration.Topology", "DotnetMassTransitApp.Configuration.Topology\DotnetMassTransitApp.Configuration.Topology.csproj", "{1B331C01-1722-4C37-8A94-4684A83DF04E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Integrations.SignalR.MVC", "DotnetMassTransitApp.Integrations.SignalR.MVC\DotnetMassTransitApp.Integrations.SignalR.MVC.csproj", "{D7D05A25-B96C-439C-A6BE-D38060110399}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Integrations.SignalR.Service", "DotnetMassTransitApp.Integrations.SignalR.Service\DotnetMassTransitApp.Integrations.SignalR.Service.csproj", "{9A2E3958-BF89-4700-8574-8932FE9D9558}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Integrations.SignalR.ConsoleClient", "DotnetMassTransitApp.Integrations.SignalR.ConsoleClient\DotnetMassTransitApp.Integrations.SignalR.ConsoleClient.csproj", "{19928229-51F6-44F0-BDCD-FE753473F855}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +87,18 @@ Global
 		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B331C01-1722-4C37-8A94-4684A83DF04E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D05A25-B96C-439C-A6BE-D38060110399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D05A25-B96C-439C-A6BE-D38060110399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D05A25-B96C-439C-A6BE-D38060110399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D05A25-B96C-439C-A6BE-D38060110399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A2E3958-BF89-4700-8574-8932FE9D9558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A2E3958-BF89-4700-8574-8932FE9D9558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A2E3958-BF89-4700-8574-8932FE9D9558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A2E3958-BF89-4700-8574-8932FE9D9558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19928229-51F6-44F0-BDCD-FE753473F855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19928229-51F6-44F0-BDCD-FE753473F855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19928229-51F6-44F0-BDCD-FE753473F855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19928229-51F6-44F0-BDCD-FE753473F855}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
