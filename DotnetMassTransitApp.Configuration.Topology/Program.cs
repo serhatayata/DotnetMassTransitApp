@@ -27,6 +27,11 @@ builder.Services.AddMassTransit(mt =>
             x.SetEntityNameFormatter(new FancyNameFormatter<OrderSubmitted>());
         });
 
+        cfg.Send<OrderSubmitted>(opt =>
+        {
+            opt.UseCorrelationId(context => context.OrderId);
+        });
+
         // We will get exchange:Shared.Queue.Contracts:ICommand => The message was not confirmed: NOT_FOUND - no exchange 'Shared.Queue.Contracts:ICommand', because exclude is true
         cfg.Publish<ICommand>(p => p.Exclude = true);
     });

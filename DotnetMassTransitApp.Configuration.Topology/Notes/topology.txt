@@ -80,3 +80,13 @@ advanced configurations.
 The ExcludeFromTopology attribute in MassTransit is used to indicate that a message type should not be included in the 
 automatic topology configuration. This means that when this attribute is applied to a message type, MassTransit will 
 not automatically create exchanges, queues, or bindings for this message type when configuring the broker's topology.
+
+
+//////// Topology Conventions
+
+Conventions are used to apply topology to messages without requiring explicit configuration of every message type.
+
+A basic example of a convention is the default CorrelationId convention, which is automatically applied to all sent messages. 
+As message types are sent, the convention is used to determine if the message contains a property that could be considered 
+a CorrelationId, and uses that property to set the CorrelationId header on the message envelope.
+
