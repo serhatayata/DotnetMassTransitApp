@@ -1,10 +1,10 @@
 using DotnetMassTransitApp.Configuration.Integrations.SignalR.MVC.Consumers;
+using DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs;
 using MassTransit;
 using MassTransit.SignalR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Shared.Queue.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
-﻿using MassTransit;
+﻿using DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs;
+using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Queue.Contracts;
-using Shared.Queue.Hubs;
 
 namespace DotnetMassTransitApp.Configuration.Integrations.SignalR.MVC.Consumers;
 

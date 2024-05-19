@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Shared.Queue.Hubs;
+namespace DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs;
 
 public class ChatHub : Hub
 {
@@ -10,3 +10,4 @@ public class ChatHub : Hub
         await Clients.All.SendAsync("broadcastMessage", name, message);
     }
 }
+
