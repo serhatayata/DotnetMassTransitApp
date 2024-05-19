@@ -4,6 +4,7 @@ using MassTransit.SignalR.Contracts;
 using MassTransit.SignalR.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Protocol;
+using Shared.Queue.Hubs;
 using static MassTransit.Monitoring.Performance.BuiltInCounters;
 
 IReadOnlyList<IHubProtocol> protocols = new IHubProtocol[] { new JsonHubProtocol() };
@@ -31,12 +32,12 @@ do
     //All (or a select few, depending on how you configured MassTransit) consumers which registered.AddSignalRHub<ChatHub>(...) will receive the message.
     //The message will be published through the SignalR connection.
     //Your client will receive the message.
-    await busControl.Publish<All<DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs.ChatHub>>(new
+    await busControl.Publish<All<ChatHub>>(new
     {
         Messages = protocols.ToProtocolDictionary("broadcastMessage", new object[] { "backend-process-hubprotocol", value })
     });
 
-    //await busControl.Publish<Group<DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs.ChatHub>>(new
+    //await busControl.Publish<Group<ChatHub>>(new
     //{
     //    GroupName = "ServiceDeskEmployees",
     //    ExcludedConnectionIds = new[] { "11b9c749-69a2-4f3e-8a8b-968122156220", "1737778b-c836-4023-a255-51c2e4898c43" },
@@ -46,13 +47,3 @@ do
 while (true);
 
 await busControl.StopAsync();
-
-namespace DotnetMassTransitApp.Integrations.SignalR.MVC.Hubs
-{
-    using Microsoft.AspNetCore.SignalR;
-
-    public class ChatHub : Hub
-    {
-        // Actual implementation in the other project, but MT Needs the hub for the generic message type
-    }
-}
