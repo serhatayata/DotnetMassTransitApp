@@ -1,6 +1,0 @@
-@DotnetMassTransitApp.Configuration.LoggingAPI_HostAddress = http://localhost:5076
-
-GET {{DotnetMassTransitApp.Configuration.LoggingAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
