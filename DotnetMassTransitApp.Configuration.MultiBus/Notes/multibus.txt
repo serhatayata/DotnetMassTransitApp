@@ -1,0 +1,28 @@
+﻿MassTransit is designed so that most applications only need a single bus, and that is the recommended approach. Using 
+a single bus, with however many receive endpoints are needed, minimizes complexity and ensures efficient broker 
+resource utilization. Consistent with this guidance, container configuration using the AddMassTransit method registers 
+the appropriate types so that they are available to other components, as well as consumers, sagas, and activities.
+
+However, with broader use of cloud-based platforms comes a greater variety of messaging transports, not to mention HTTP as 
+a transfer protocol. As application sophistication increases, connecting to multiple message transports and/or brokers 
+is becoming more common. Therefore, rather than force developers to create their own solutions, MassTransit has the 
+ability to configure additional bus instances within specific dependency injection containers.
+
+//////// MultiBus Configuration
+
+To support multiple bus instances in a single container, the interface behaviors described above had to be 
+considered carefully. There are expectations as to how these interfaces behave, and it was important to ensure 
+consistent behavior whether an application has one, two, or a dozen bus instances (please, not a dozen – think of 
+the children). A way to differentiate between different bus instances ensuring that sent or published messages end up on 
+the right queues or topics is needed. The ability to configure each bus instance separately, yet leverage the power of 
+a single shared container is also a must.
+
+To configure additional bus instances, create a new interface that includes IBus. Then, using that interface, configure 
+the additional bus using the AddMassTransit<T> method, which is included in the MassTransit.MultiBus namespace.
+
+
+//////// Using your MultiBus
+
+For consumers or dependencies that need to send or publish messages to a different bus instance, a dependency on that 
+specific bus interface (such as IBus, or ISecondBus) would be added.
+
