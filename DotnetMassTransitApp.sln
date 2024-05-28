@@ -33,9 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Integr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Integrations.SignalR.ConsoleClient", "DotnetMassTransitApp.Integrations.SignalR.ConsoleClient\DotnetMassTransitApp.Integrations.SignalR.ConsoleClient.csproj", "{19928229-51F6-44F0-BDCD-FE753473F855}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Configuration.MultiBus", "DotnetMassTransitApp.Configuration.MultiBus\DotnetMassTransitApp.Configuration.MultiBus.csproj", "{75650061-06A9-4687-803A-F819A7F8C9ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Configuration.MultiBus", "DotnetMassTransitApp.Configuration.MultiBus\DotnetMassTransitApp.Configuration.MultiBus.csproj", "{75650061-06A9-4687-803A-F819A7F8C9ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Configuration.MultiBus.Producer", "DotnetMassTransitApp.Configuration.MultiBus.Producer\DotnetMassTransitApp.Configuration.MultiBus.Producer.csproj", "{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Configuration.MultiBus.Producer", "DotnetMassTransitApp.Configuration.MultiBus.Producer\DotnetMassTransitApp.Configuration.MultiBus.Producer.csproj", "{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Observability.Monitoring", "DotnetMassTransitApp.Observability.Monitoring\DotnetMassTransitApp.Observability.Monitoring.csproj", "{482532EC-CE53-4804-AD2C-48F7D106887C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{482532EC-CE53-4804-AD2C-48F7D106887C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482532EC-CE53-4804-AD2C-48F7D106887C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482532EC-CE53-4804-AD2C-48F7D106887C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482532EC-CE53-4804-AD2C-48F7D106887C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

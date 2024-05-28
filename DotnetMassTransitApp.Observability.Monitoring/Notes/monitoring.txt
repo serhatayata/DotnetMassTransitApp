@@ -1,0 +1,9 @@
+﻿//////// Open Telemetry
+
+OpenTelemetry is an open-source standard for distributed tracing, which allows you to collect and analyze data about 
+the performance of your systems. MassTransit can be configured to use OpenTelemetry to instrument message handling, so 
+that you can collect telemetry data about messages as they flow through your system.
+
+By using OpenTelemetry with MassTransit, you can gain insights into the performance of your systems, which can help you 
+to identify and troubleshoot issues, and to improve the overall performance of your application.
+
