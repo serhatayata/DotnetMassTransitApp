@@ -26,3 +26,39 @@ the additional bus using the AddMassTransit<T> method, which is included in the 
 For consumers or dependencies that need to send or publish messages to a different bus instance, a dependency on that 
 specific bus interface (such as IBus, or ISecondBus) would be added.
 
+//////// Container Registration Details
+
+To support a first class experience with Microsoft.Extensions.DependencyInjection MassTransit registers common 
+interfaces for MultiBus instances using a Bind<TKey, TValue> that allows you to specify the owner of the type you 
+are interested in. This allows you to access various pieces of MassTransit outside of a Consumer. Below are two tables 
+that list out the various items you might be interested in.
+
+//// First Bus
+
+There are several interfaces added to the container using this configuration:
+
+IBusControl						Singleton		Used to start/stop the bus (not typically used)
+IBus							Singleton		Publish/Send on this bus, starting a new conversation
+ISendEndpointProvider			Scoped			Send messages from consumer dependencies, ASP.NET Controllers
+IPublishEndpoint				Scoped			Publish messages from consumer dependencies, ASP.NET Controllers
+IClientFactory					Singleton		Used to create request clients (singleton, or within scoped consumers)
+IRequestClient<SubmitOrder>		Scoped			Used to send requests
+ConsumeContext					Scoped			Available in any message scope, such as a consumer, saga, or activity
+
+
+//// Multibus
+
+The registered interfaces are slightly different for additional bus instances.
+
+IBusControl									N/A	Not registered, but automatically started/stopped by the hosted service
+IBus										N/A	Not registered, the new bus interface is registered instead
+ISecondBus									Singleton	Publish/Send on this bus, starting a new conversation
+ISendEndpointProvider						Scoped	Send messages from consumer dependencies only
+IPublishEndpoint							Scoped	Publish messages from consumer dependencies only
+IClientFactory								N/A	Registered as an instance-specific client factory
+IRequestClient<SubmitOrder>					Scoped	Created using the specific bus instance
+ConsumeContext								Scoped	Available in any message scope, such as a consumer, saga, or activity
+Bind<ISecondBus, ISendEndpointProvider>		Scoped	Send messages from controllers or outside of a consumer context
+Bind<ISecondBus, IPublishEndpoint>			Scoped	Publish messages from controllers or outside of a consumer context
+Bind<ISecondBus, IClientFactory>			Scoped	Registered as an instance-specific client factory
+Bind<ISecondBus, IRequestClient<SubmitOrder>>	Scoped	Created using the bound bus instance
