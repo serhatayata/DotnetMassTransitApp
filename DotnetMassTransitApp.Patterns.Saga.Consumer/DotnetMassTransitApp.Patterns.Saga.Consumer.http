@@ -1,0 +1,6 @@
+@DotnetMassTransitApp.Patterns.Saga.Consumer_HostAddress = http://localhost:5282
+
+GET {{DotnetMassTransitApp.Patterns.Saga.Consumer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

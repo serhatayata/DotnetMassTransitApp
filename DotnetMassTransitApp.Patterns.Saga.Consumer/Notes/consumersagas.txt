@@ -1,0 +1,14 @@
+﻿A consumer saga is a class, identified by a CorrelationId, that defines the state persisted by a saga repository. Along with 
+the state, interfaces may be added to the saga class to define the events handled by the saga. This combination of state 
+and behavior in a single class is a consumer saga.
+
+//// Orchestrates
+
+To define an event orchestrated by an existing saga instance, such as OrderAccepted, an additional interface and method 
+is specified.
+
+//// Observes
+
+To define an event observed by an existing saga instance that does not implement the CorrelatedBy interface, such 
+as OrderShipped, an additional interface and method is specified.
+
