@@ -12,13 +12,16 @@ namespace DotnetMassTransitApp.Configuration.MultiBus.Producer.Controllers;
 public class ValuesController : ControllerBase
 {
     private readonly Bind<ISecondBus, IPublishEndpoint> _secondBusPublishEndpoint;
+    private readonly Bind<IThirdBus, IPublishEndpoint> _thirdBusPublishEndpoint;
     private readonly IPublishEndpoint _publishEndpoint;
 
     public ValuesController(
         Bind<ISecondBus, IPublishEndpoint> secondBusPublishEndpoint, 
+        Bind<IThirdBus, IPublishEndpoint> thirdBusPublishEndpoint, 
         IPublishEndpoint publishEndpoint)
     {
         _secondBusPublishEndpoint = secondBusPublishEndpoint;
+        _thirdBusPublishEndpoint = thirdBusPublishEndpoint;
         _publishEndpoint = publishEndpoint;
     }
 
@@ -45,6 +48,19 @@ public class ValuesController : ControllerBase
         new RefundOrder()
         {
             OrderId = Guid.NewGuid()
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("third-bus-publish")]
+    public async Task<IActionResult> ThirdBusPublish()
+    {
+        await _thirdBusPublishEndpoint.Value.Publish<SendNotificationOrder>(
+        new SendNotificationOrder()
+        {
+            OrderId = Guid.NewGuid(),
+            Email = "test@test.com"
         });
 
         return Ok();

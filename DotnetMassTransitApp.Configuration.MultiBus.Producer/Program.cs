@@ -58,6 +58,30 @@ builder.Services.AddMassTransit<ISecondBus>(mt =>
     });
 });
 
+builder.Services.AddMassTransit<IThirdBus>(mt =>
+{
+    mt.UsingRabbitMq((cntx, cfg) =>
+    {
+        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+
+        cfg.Host(queueSettings.Host);
+
+        cfg.Message<SendNotificationOrder>(x =>
+        {
+            x.SetEntityName("send-notification-order-exchange");
+        });
+
+        cfg.Publish<SendNotificationOrder>(opt =>
+        {
+            opt.ExchangeType = "fanout";
+            opt.AutoDelete = false;
+            opt.Durable = true;
+        });
+
+        cfg.ConfigureEndpoints(cntx);
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

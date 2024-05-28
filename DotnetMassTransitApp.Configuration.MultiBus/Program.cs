@@ -1,6 +1,7 @@
 using DotnetMassTransitApp.Configuration.MultiBus.Consumers;
 using MassTransit;
 using Shared.Queue.Buses;
+using Shared.Queue.Contracts;
 using Shared.Queue.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,11 +48,43 @@ builder.Services.AddMassTransit<ISecondBus>(x =>
 
     x.UsingRabbitMq((cntx, cfg) =>
     {
+        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+
+        cfg.Host(queueSettings.Host);
+
         cfg.ReceiveEndpoint(queueName: "refund-order", ep =>
         {
             ep.ConfigureConsumer<RefundOrderConsumer>(cntx);
 
             ep.Bind(exchangeName: "refund-order-exchange", clb =>
+            {
+                clb.ExchangeType = "fanout";
+                clb.AutoDelete = false;
+                clb.Durable = true;
+            });
+        });
+
+        cfg.ConfigureEndpoints(cntx);
+    });
+});
+
+
+// Third bus
+builder.Services.AddMassTransit<IThirdBus>(x =>
+{
+    x.AddConsumer<SendNotificationOrderConsumer>();
+
+    x.UsingRabbitMq((cntx, cfg) =>
+    {
+        var queueSettings = configuration.GetSection("QueueSettings").Get<QueueSettings>();
+
+        cfg.Host(queueSettings.Host);
+
+        cfg.ReceiveEndpoint(queueName: "send-notification-order", ep =>
+        {
+            ep.ConfigureConsumer<SendNotificationOrderConsumer>(cntx);
+
+            ep.Bind(exchangeName: "send-notification-order-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
                 clb.AutoDelete = false;
