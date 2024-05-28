@@ -37,11 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Config
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Configuration.MultiBus.Producer", "DotnetMassTransitApp.Configuration.MultiBus.Producer\DotnetMassTransitApp.Configuration.MultiBus.Producer.csproj", "{3036FEB3-20FA-4C3F-816B-845BD04D4E8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Observability.Monitoring", "DotnetMassTransitApp.Observability.Monitoring\DotnetMassTransitApp.Observability.Monitoring.csproj", "{482532EC-CE53-4804-AD2C-48F7D106887C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Observability.Monitoring", "DotnetMassTransitApp.Observability.Monitoring\DotnetMassTransitApp.Observability.Monitoring.csproj", "{482532EC-CE53-4804-AD2C-48F7D106887C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Observability.Metrics", "DotnetMassTransitApp.Observability.Metrics\DotnetMassTransitApp.Observability.Metrics.csproj", "{807B8A3C-92DE-4D5F-8CD1-4B9718858F7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Observability.Metrics", "DotnetMassTransitApp.Observability.Metrics\DotnetMassTransitApp.Observability.Metrics.csproj", "{807B8A3C-92DE-4D5F-8CD1-4B9718858F7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Patterns.Saga.Consumer", "DotnetMassTransitApp.Patterns.Saga.Consumer\DotnetMassTransitApp.Patterns.Saga.Consumer.csproj", "{C4D786DB-D824-432B-85AE-33C2F5C471BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetMassTransitApp.Patterns.Saga.Consumer", "DotnetMassTransitApp.Patterns.Saga.Consumer\DotnetMassTransitApp.Patterns.Saga.Consumer.csproj", "{C4D786DB-D824-432B-85AE-33C2F5C471BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetMassTransitApp.Patterns.Saga.StateMachine", "DotnetMassTransitApp.Patterns.Saga.StateMachine\DotnetMassTransitApp.Patterns.Saga.StateMachine.csproj", "{7F9F71C8-BB1B-4540-9017-4662889AFD36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,10 @@ Global
 		{C4D786DB-D824-432B-85AE-33C2F5C471BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4D786DB-D824-432B-85AE-33C2F5C471BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4D786DB-D824-432B-85AE-33C2F5C471BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F9F71C8-BB1B-4540-9017-4662889AFD36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F9F71C8-BB1B-4540-9017-4662889AFD36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F9F71C8-BB1B-4540-9017-4662889AFD36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F9F71C8-BB1B-4540-9017-4662889AFD36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

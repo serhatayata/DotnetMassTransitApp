@@ -1,0 +1,39 @@
+﻿Automatonymous is a state machine library for .NET and provides a C# syntax to define a state machine, including states, 
+events, and behaviors. MassTransit includes Automatonymous, and adds instance storage, event correlation, message 
+binding, request and response support, and scheduling.
+
+Automatonymous is no longer a separate NuGet package and has been assimilated by MassTransit. In previous versions, 
+an additional package reference was required. If Automatonymous is referenced, that reference must be removed as it is no 
+longer compatible.
+
+//// State Machine
+
+A state machine defines the states, events, and behavior of a finite state machine. Implemented as a class, which is 
+derived from MassTransitStateMachine<T>, a state machine is created once, and then used to apply event triggered behavior 
+to state machine instances.
+
+//// Instance
+
+An instance contains the data for a state machine instance. A new instance is created for every consumed initial event where 
+an existing instance with the same CorrelationId was not found. A saga repository is used to persist instances. Instances 
+are classes, and must implement the SagaStateMachineInstance interface.
+
+//// State
+
+States represent previously consumed events resulting in an instance being in a current state. An instance can only be in 
+one state at a given time. A new instance defaults to the Initial state, which is automatically defined. The Final state is 
+also defined for all state machines and is used to signify the instance has reached the final state.
+
+//// Event
+
+An event is something that happened which may result in a state change. An event can add or update instance data, as well 
+as changing an instance's current state. The Event<T> is generic, where T must be a valid message type.
+
+//// Behavior
+
+Behavior is what happens when an event occurs during a state.
+
+//// Message Order
+
+Message brokers typically do not guarantee message order. Therefore, it is important to consider out-of-order messages in 
+state machine design.
