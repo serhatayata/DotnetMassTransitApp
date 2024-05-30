@@ -1,7 +1,7 @@
 ﻿namespace Shared.Queue.Contracts;
 
-public class OrderAccepted
+public class ProcessOrder
 {
     public Guid OrderId { get; set; }
-    public TimeSpan CompletionTime { get; set; }
+    public Guid ProcessingId { get; set; }
 }

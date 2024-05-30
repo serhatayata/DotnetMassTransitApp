@@ -37,3 +37,52 @@ Behavior is what happens when an event occurs during a state.
 
 Message brokers typically do not guarantee message order. Therefore, it is important to consider out-of-order messages in 
 state machine design.
+
+
+//// Event
+
+An event is a message that can be consumed by the state machine. Events can specify any valid message type, and each event 
+may be configured. There are several event configuration methods available.
+
+The built-in CorrelatedBy<Guid> interface can be used in a message contract to specify the event CorrelationId.
+
+
+//// Ignore event
+
+It may be necessary to ignore an event in a given state, either to avoid fault generation, or to prevent messages from 
+being moved to the _skipped queue. To ignore an event in a state, use the Ignore method.
+
+
+//// Missing Event
+
+If an event is not matching to an instance, the missing instance behavior can be configured.
+
+
+//// Initial Insert
+
+To increase new instance performance, configuring an event to directly insert into a saga repository may reduce lock 
+contention. To configure an event to insert, it should be in the Initially block, as well as have a saga factory specified.
+
+//// Completed Instance
+
+By default, instances are not removed from the saga repository. To configure completed instance removal, specify the method 
+used to determine if an instance has completed.
+
+When the instance consumes the OrderCompleted event, the instance is finalized (which transitions the instance to the 
+Final state). The SetCompletedWhenFinalized method defines an instance in the Final state as completed – which is then used 
+by the saga repository to remove the instance.
+
+To use a different completed expression, such as one that checks if the instance is in a Completed state, use the 
+SetCompleted method.
+
+
+//// ACTIVITIES
+
+State machine behaviors are defined as a sequence of activities which are executed in response to an event. In addition to 
+the activities included with Automatonymous, MassTransit includes activities to send, publish, and schedule messages, as well 
+as initiate and respond to requests.
+
+
+
+//// REQUEST
+

@@ -1,0 +1,6 @@
+@DotnetMassTransitApp.Patterns.Saga.Producer_HostAddress = http://localhost:5110
+
+GET {{DotnetMassTransitApp.Patterns.Saga.Producer_HostAddress}}/values/
+Accept: application/json
+
+###

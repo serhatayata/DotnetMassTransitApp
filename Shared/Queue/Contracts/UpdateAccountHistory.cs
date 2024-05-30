@@ -1,7 +1,6 @@
 ﻿namespace Shared.Queue.Contracts;
 
-public class OrderAccepted
+public class UpdateAccountHistory
 {
     public Guid OrderId { get; set; }
-    public TimeSpan CompletionTime { get; set; }
 }
