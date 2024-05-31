@@ -39,6 +39,10 @@ public class OrderStateMachine :
     public State Canceled { get; private set; }
     public State Created { get; set; }
 
+    public State Processed { get; private set; }
+    public State ProcessFaulted { get; private set; }
+    public State ProcessTimeoutExpired { get; private set; }
+
 
     public OrderStateMachine()
     {
@@ -58,11 +62,11 @@ public class OrderStateMachine :
         // This can also be used to specify Order id as correlation id
         //GlobalTopology.Send.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
-        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
 
-        During(Submitted,
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .TransitionTo(Accepted));
 
 
 
@@ -409,7 +413,46 @@ public class OrderStateMachine :
 
         // Request
 
-        Continues
+        //Request(
+        //    () => ProcessOrder,
+        //    x => x.ProcessOrderRequestId, // Optional
+        //    r => {
+        //        r.ServiceAddress = new Uri("ProcessOrderServiceAddress");
+        //        r.Timeout = TimeSpan.FromMinutes(1);
+        //    });
+
+        // Once defined, the request activity can be added to a behavior.
+
+        // The Request includes three events: Completed, Faulted, and TimeoutExpired. These events can be consumed
+        // during any state, however, the Request includes a Pending state which can be used to avoid declaring a
+        // separate pending state.
+
+        // The request timeout is scheduled using the message scheduler, and the scheduled message is canceled when
+        // a response or fault is received. Not all message schedulers support cancellation, so it may be necessary
+        // to Ignore the TimeoutExpired event in subsequent states.
+
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .Request(ProcessOrder, x => x.Init<ProcessOrder>(new { OrderId = x.Saga.CorrelationId }))
+        //        .TransitionTo(ProcessOrder.Pending));
+
+        //During(ProcessOrder.Pending,
+        //    When(ProcessOrder.Completed)
+        //        .Then(context => context.Saga.ProcessingId = context.Message.ProcessingId)
+        //        .TransitionTo(Processed),
+        //    When(ProcessOrder.Faulted)
+        //        .TransitionTo(ProcessFaulted),
+        //    When(ProcessOrder.TimeoutExpired)
+        //        .TransitionTo(ProcessTimeoutExpired));
+
+        // If the saga instance has been finalized before the response, fault, or timeout have been received, it is possible to configure a missing instance handler, similar to a regular event.
+
+        //Request(() => ProcessOrder, x => x.ProcessOrderRequestId, r =>
+        //{
+        //    r.Completed = m => m.OnMissingInstance(i => i.Discard());
+        //    r.Faulted = m => m.OnMissingInstance(i => i.Discard());
+        //    r.TimeoutExpired = m => m.OnMissingInstance(i => i.Discard());
+        //});
     }
 
 }
