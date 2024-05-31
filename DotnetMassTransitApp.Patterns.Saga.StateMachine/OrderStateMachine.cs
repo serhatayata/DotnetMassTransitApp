@@ -25,11 +25,12 @@ public class OrderStateMachine :
     public Event<OrderCompleted> OrderCompleted { get; private set; }
     public Event<CreateOrder> OrderSubmitted { get; set; }
 
-
     // Added for composite event
     public Event OrderReady { get; private set; }
 
     public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
+    public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; private set; } = null!;
+
 
     public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; private set; }
 
@@ -453,6 +454,22 @@ public class OrderStateMachine :
         //    r.Faulted = m => m.OnMissingInstance(i => i.Discard());
         //    r.TimeoutExpired = m => m.OnMissingInstance(i => i.Discard());
         //});
-    }
 
+        // Request Overrides
+
+        //var sendAddressUri = new Uri("sendAddress");
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .Request(ProcessOrder, context => sendAddressUri, context => new ProcessOrder())
+        //        .TransitionTo(ProcessOrder.Pending));
+
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .Request(ProcessOrder, context => sendAddressUri, async context =>
+        //        {
+        //            await Task.Delay(1);
+        //            return new ProcessOrder();
+        //        })
+        //        .TransitionTo(ProcessOrder.Pending));
+    }
 }
