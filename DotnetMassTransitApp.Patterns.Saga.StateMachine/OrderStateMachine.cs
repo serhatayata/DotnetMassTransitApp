@@ -12,6 +12,7 @@ using System.Data;
 using System.Reflection.PortableExecutable;
 using System.Reflection;
 using Shared.Queue.Saga.Contracts;
+using DotnetMassTransitApp.Patterns.Saga.StateMachine.Activities;
 
 namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 
@@ -24,6 +25,7 @@ public class OrderStateMachine :
     public Event<RequestOrderCancellation> OrderCancellationRequested { get; private set; }
     public Event<OrderCompleted> OrderCompleted { get; private set; }
     public Event<CreateOrder> OrderSubmitted { get; set; }
+    public Event<OrderClosed> OrderClosed { get; private set; } = null!;
 
     // Added for composite event
     public Event OrderReady { get; private set; }
@@ -471,5 +473,13 @@ public class OrderStateMachine :
         //            return new ProcessOrder();
         //        })
         //        .TransitionTo(ProcessOrder.Pending));
+
+        // CUSTOM ACTIVITY
+        //InstanceState(x => x.CurrentState);
+
+        //Initially(
+        //    When(OrderClosed)
+        //        .Activity(x => x.OfType<OrderClosedActivity>())
+        //        .TransitionTo(Submitted));
     }
 }

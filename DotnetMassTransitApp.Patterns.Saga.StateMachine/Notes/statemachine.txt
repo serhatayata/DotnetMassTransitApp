@@ -116,3 +116,12 @@ consider this when choosing which method to use.
 If the saga instance has been finalized before the response, fault, or timeout have been received, it is possible to configure 
 a missing instance handler, similar to a regular event.
 
+
+//// Saga State Machine Activities
+
+There are scenarios when an event behavior may have dependencies that need to be managed at a scope level, such as a 
+database connection, or the complexity is best encapsulated in a separate class rather than being part of the state 
+machine itself. Developers can create their own activities for state machine use, and optionally create their own 
+extension methods to add them to a behavior.
+
+

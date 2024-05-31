@@ -1,4 +1,5 @@
 using DotnetMassTransitApp.Patterns.Saga.StateMachine;
+using DotnetMassTransitApp.Patterns.Saga.StateMachine.Services;
 using MassTransit;
 using Shared.Queue.Saga;
 using static MassTransit.Logging.OperationName;
@@ -10,6 +11,8 @@ builder.Services.AddMassTransit(x =>
     x.AddSagaStateMachine<OrderStateMachine, OrderState>()
         .InMemoryRepository();
 });
+
+builder.Services.AddScoped<ISomeService, SomeService>();
 
 // Sagas are added inside the AddMassTransit configuration using any of the following methods.
 
