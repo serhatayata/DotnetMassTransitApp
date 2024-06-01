@@ -21,31 +21,31 @@ builder.Services.AddMassTransit(mt =>
         });
 
         // Submit Order Fanout Exchange
-        cfg.Message<SubmitOrder>(x =>
-        {
-            x.SetEntityName("submit-order-exchange");
-        });
+        //cfg.Message<SubmitOrder>(x =>
+        //{
+        //    x.SetEntityName("submit-order-exchange");
+        //});
 
-        cfg.Publish<SubmitOrder>(opt =>
-        {
-            opt.ExchangeType = "fanout";
-            opt.AutoDelete = false;
-            opt.Durable = true;
-        });
+        //cfg.Publish<SubmitOrder>(opt =>
+        //{
+        //    opt.ExchangeType = "fanout";
+        //    opt.AutoDelete = false;
+        //    opt.Durable = true;
+        //});
 
         // Order accepted fanout exchange
 
-        cfg.Message<OrderAccepted>(x =>
-        {
-            x.SetEntityName("order-accepted-exchange");
-        });
+        //cfg.Message<OrderAccepted>(x =>
+        //{
+        //    x.SetEntityName("order-accepted-exchange");
+        //});
 
-        cfg.Publish<OrderAccepted>(opt =>
-        {
-            opt.ExchangeType = "fanout";
-            opt.AutoDelete = false;
-            opt.Durable = true;
-        });
+        //cfg.Publish<OrderAccepted>(opt =>
+        //{
+        //    opt.ExchangeType = "fanout";
+        //    opt.AutoDelete = false;
+        //    opt.Durable = true;
+        //});
 
         cfg.SendTopology.UseCorrelationId<SubmitOrder>(x => x.OrderId);
         cfg.SendTopology.UseCorrelationId<OrderAccepted>(x => x.OrderId);

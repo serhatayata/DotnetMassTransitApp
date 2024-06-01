@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotnetMassTransitApp.Patterns.Saga.StateMachine.Migrations
 {
     [DbContext(typeof(OrderStateDbContext))]
-    [Migration("20240601070406_mig_v1")]
+    [Migration("20240601084657_mig_v1")]
     partial class mig_v1
     {
         /// <inheritdoc />
@@ -33,41 +33,6 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine.Migrations
                     b.Property<int>("CurrentState")
                         .HasMaxLength(64)
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("OrderCompletionTimeoutTokenId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OrderNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ProcessOrderRequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProcessingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ReadyEventStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("RequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ResponseAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.HasKey("CorrelationId");
 

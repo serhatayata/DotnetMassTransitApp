@@ -19,32 +19,32 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    public Event<SubmitOrder> SubmitOrder { get; private set; }
-    public Event<OrderAccepted> OrderAccepted { get; private set; }
-    public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; private set; }
-    public Event<RequestOrderCancellation> OrderCancellationRequested { get; private set; }
-    public Event<OrderCompleted> OrderCompleted { get; private set; }
-    public Event<CreateOrder> OrderSubmitted { get; set; }
-    public Event<OrderClosed> OrderClosed { get; private set; } = null!;
+    public Event<SubmitOrder> SubmitOrder { get; set; }
+    //public Event<OrderAccepted> OrderAccepted { get; set; }
+    //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
+    //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
+    //public Event<OrderCompleted> OrderCompleted { get; set; }
+    //public Event<CreateOrder> OrderSubmitted { get; set; }
+    //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
-    // Added for composite event
-    public Event OrderReady { get; private set; }
+    //// Added for composite event
+    //public Event OrderReady { get; set; }
 
-    public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
-    public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; private set; } = null!;
+    //public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
+    //public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; set; } = null!;
 
 
-    public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; private set; }
+    //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    public State Submitted { get; private set; }
-    public State Accepted { get; private set; }
-    public State Completed { get; private set; }
-    public State Canceled { get; private set; }
-    public State Created { get; set; }
+    public State Submitted { get; set; }
+    //public State Accepted { get; set; }
+    //public State Completed { get; set; }
+    //public State Canceled { get; set; }
+    //public State Created { get; set; }
 
-    public State Processed { get; private set; }
-    public State ProcessFaulted { get; private set; }
-    public State ProcessTimeoutExpired { get; private set; }
+    //public State Processed { get; set; }
+    //public State ProcessFaulted { get; set; }
+    //public State ProcessTimeoutExpired { get; set; }
 
 
     public OrderStateMachine()
@@ -56,9 +56,17 @@ public class OrderStateMachine :
         /// a new instance will be created in the Initial state. The TransitionTo activity transitions the instance to 
         /// the Submitted state, after which the instance is persisted using the saga repository.
 
+        InstanceState(o => o.CurrentState);
+
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
         Initially(
             When(SubmitOrder)
-                .TransitionTo(Submitted));
+            .Then(context =>
+            {
+                Console.WriteLine($"{SubmitOrder} after : {context.Saga}");
+            })
+            .TransitionTo(Submitted));
 
         // Subsequently, the OrderAccepted event could be handled by the behavior shown below.
 

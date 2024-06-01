@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using System.Reflection;
 
 namespace DotnetMassTransitApp.Patterns.Saga.StateMachine.Infrastructure.Contexts;
 
@@ -18,8 +19,12 @@ public class OrderStateDbContextFactory : IDesignTimeDbContextFactory<OrderState
 
         var connectionString = configuration.GetConnectionString("OrderState");
 
-        builder.UseSqlServer(connectionString);
+        builder.UseSqlServer(connectionString, m =>
+        {
+            m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+            m.MigrationsHistoryTable($"__{nameof(OrderStateDbContext)}");
+        });
 
-        return new OrderStateDbContext(builder.Options, configuration);
+        return new OrderStateDbContext(builder.Options);
     }
 }

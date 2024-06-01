@@ -13,8 +13,8 @@ public class OrderStateMap : SagaClassMap<OrderState>
     {
         entity.Property(x => x.CurrentState).HasMaxLength(64);
 
-        entity.Property(x => x.OrderDate);
+        //entity.Property(x => x.OrderDate);
 
-        entity.Property(x => x.RowVersion).IsRowVersion();
+        //entity.Property(x => x.RowVersion).IsRowVersion();
     }
 }

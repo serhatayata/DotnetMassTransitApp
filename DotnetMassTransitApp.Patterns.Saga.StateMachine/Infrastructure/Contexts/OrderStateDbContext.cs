@@ -6,14 +6,11 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine.Infrastructure.Context
 
 public class OrderStateDbContext : SagaDbContext
 {
-    private readonly IConfiguration _configuration;
 
     public OrderStateDbContext(
-        DbContextOptions options, 
-        IConfiguration configuration)
+        DbContextOptions options)
     : base(options)
     {
-        _configuration = configuration;
     }
 
     protected override IEnumerable<ISagaClassMap> Configurations

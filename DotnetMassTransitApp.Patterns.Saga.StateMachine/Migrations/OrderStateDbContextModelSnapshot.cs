@@ -31,41 +31,6 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("OrderCompletionTimeoutTokenId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OrderNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ProcessOrderRequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProcessingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ReadyEventStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("RequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ResponseAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("CorrelationId");
 
                     b.ToTable("OrderState");

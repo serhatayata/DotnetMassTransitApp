@@ -4,6 +4,7 @@ using DotnetMassTransitApp.Patterns.Saga.StateMachine.Services;
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
+using Shared.Queue.Contracts;
 using Shared.Queue.Saga;
 using System.Reflection;
 
@@ -38,12 +39,7 @@ builder.Services.AddMassTransit(x =>
 
         cfg.ReceiveEndpoint("submit-order", r =>
         {
-            r.Bind(exchangeName: "submit-order-exchange", clb =>
-            {
-                clb.ExchangeType = "fanout";
-                clb.AutoDelete = false;
-                clb.Durable = true;
-            });
+            r.ConfigureSaga<OrderState>(context);
         });
     });
 });
