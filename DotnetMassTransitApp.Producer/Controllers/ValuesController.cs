@@ -7,6 +7,7 @@ using Shared.Queue.Events;
 using Shared.Queue.Requests;
 using Shared.Queue.Responses;
 using System.Threading;
+using OrderNotFound = Shared.Queue.Responses.OrderNotFound;
 
 namespace DotnetMassTransitApp.Producer.Controllers;
 

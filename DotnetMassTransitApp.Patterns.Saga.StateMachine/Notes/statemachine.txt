@@ -125,3 +125,8 @@ machine itself. Developers can create their own activities for state machine use
 extension methods to add them to a behavior.
 
 
+//// Definitions
+
+Saga definitions are used to specify the behavior of consumers so that they can be automatically configured. Definitions may 
+be explicitly added by AddSaga or discovered automatically using any of the AddSagas methods.
+

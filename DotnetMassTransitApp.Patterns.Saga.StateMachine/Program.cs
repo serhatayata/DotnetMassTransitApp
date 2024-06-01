@@ -1,18 +1,57 @@
 using DotnetMassTransitApp.Patterns.Saga.StateMachine;
+using DotnetMassTransitApp.Patterns.Saga.StateMachine.Infrastructure.Contexts;
 using DotnetMassTransitApp.Patterns.Saga.StateMachine.Services;
 using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
+using Microsoft.EntityFrameworkCore;
 using Shared.Queue.Saga;
-using static MassTransit.Logging.OperationName;
+using System.Reflection;
 
 var builder = Host.CreateApplicationBuilder(args);
+var configuration = builder.Configuration;
+
+builder.Services.AddScoped<ISomeService, SomeService>();
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddSagaStateMachine<OrderStateMachine, OrderState>()
-        .InMemoryRepository();
+        .EntityFrameworkRepository(cfg =>
+        {
+            cfg.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires RowVersion
+
+            cfg.AddDbContext<DbContext, OrderStateDbContext>((provider, builder) =>
+            {
+                var connectionString = configuration.GetConnectionString("OrderState");
+                builder.UseSqlServer(connectionString, m =>
+                {
+                    m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                    m.MigrationsHistoryTable($"__{nameof(OrderStateDbContext)}");
+                });
+            });
+        });
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitmqConn = configuration.GetConnectionString("RabbitMQ");
+
+        cfg.Host(rabbitmqConn);
+
+        cfg.ReceiveEndpoint("submit-order", r =>
+        {
+            r.Bind(exchangeName: "submit-order-exchange", clb =>
+            {
+                clb.ExchangeType = "fanout";
+                clb.AutoDelete = false;
+                clb.Durable = true;
+            });
+        });
+    });
 });
 
-builder.Services.AddScoped<ISomeService, SomeService>();
+var serviceProvider = builder.Services.BuildServiceProvider();
+var context = serviceProvider.GetRequiredService<DbContext>();
+
+context.Database.Migrate();
 
 // Sagas are added inside the AddMassTransit configuration using any of the following methods.
 

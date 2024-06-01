@@ -5,6 +5,7 @@ using Shared.Queue.Events;
 using Shared.Queue.Responses;
 
 namespace DotnetMassTransitApp.Requests.Consumers;
+using OrderNotFound = Shared.Queue.Responses.OrderNotFound;
 
 public class CancelOrderConsumer : IConsumer<CancelOrder>
 {

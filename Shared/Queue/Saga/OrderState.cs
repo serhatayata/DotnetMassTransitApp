@@ -19,4 +19,6 @@ public class OrderState : SagaStateMachineInstance
     public int ReadyEventStatus { get; set; }
 
     public Guid? OrderCompletionTimeoutTokenId { get; set; }
+
+    public byte[] RowVersion { get; set; }
 }
