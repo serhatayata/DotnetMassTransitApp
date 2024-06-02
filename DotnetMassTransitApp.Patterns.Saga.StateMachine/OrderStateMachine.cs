@@ -20,7 +20,7 @@ public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
     public Event<SubmitOrder> SubmitOrder { get; set; }
-    //public Event<OrderAccepted> OrderAccepted { get; set; }
+    public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
@@ -37,7 +37,7 @@ public class OrderStateMachine :
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
     public State Submitted { get; set; }
-    //public State Accepted { get; set; }
+    public State Accepted { get; set; }
     //public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
@@ -56,8 +56,26 @@ public class OrderStateMachine :
         /// a new instance will be created in the Initial state. The TransitionTo activity transitions the instance to 
         /// the Submitted state, after which the instance is persisted using the saga repository.
 
+        //InstanceState(o => o.CurrentState);
+
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
+        //Initially(
+        //    When(SubmitOrder)
+        //    .Then(context =>
+        //    {
+        //        Console.WriteLine($"{SubmitOrder} after : {context.Saga}");
+        //    })
+        //    .TransitionTo(Submitted));
+
+        // Subsequently, the OrderAccepted event could be handled by the behavior shown below.
+
+        // This can also be used to specify Order id as correlation id
+        //GlobalTopology.Send.UseCorrelationId<SubmitOrder>(x => x.OrderId);
+
         InstanceState(o => o.CurrentState);
 
+        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
         Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
         Initially(
@@ -68,18 +86,13 @@ public class OrderStateMachine :
             })
             .TransitionTo(Submitted));
 
-        // Subsequently, the OrderAccepted event could be handled by the behavior shown below.
-
-        // This can also be used to specify Order id as correlation id
-        //GlobalTopology.Send.UseCorrelationId<SubmitOrder>(x => x.OrderId);
-
-        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
-
-        //During(Submitted,
-        //    When(OrderAccepted)
-        //        .TransitionTo(Accepted));
-
-
+        During(Submitted,
+            When(OrderAccepted)
+            .Then(context =>
+            {
+                Console.WriteLine($"{OrderAccepted} after : {context.Saga}");
+            })
+            .TransitionTo(Accepted));
 
         //////////////////// PART 2 ////////////////////
 
