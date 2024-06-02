@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Shared.Queue.Contracts;
 using Shared.Queue.Events;
 using Shared.Queue.Saga;
-using Shared.Queue.Saga.Events;
 using Shared.Queue.Requests;
 using System.Threading.Channels;
 using System.Collections.Generic;
@@ -19,9 +18,9 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    public Event<SubmitOrder> SubmitOrder { get; set; }
-    public Event<OrderAccepted> OrderAccepted { get; set; }
-    //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
+    //public Event<SubmitOrder> SubmitOrder { get; set; }
+    //public Event<OrderAccepted> OrderAccepted { get; set; }
+    public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
@@ -36,8 +35,9 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    public State Submitted { get; set; }
-    public State Accepted { get; set; }
+    //public State Submitted { get; set; }
+    public State ExternallySubmitted { get; set; }
+    //public State Accepted { get; set; }
     //public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
@@ -56,6 +56,8 @@ public class OrderStateMachine :
         /// a new instance will be created in the Initial state. The TransitionTo activity transitions the instance to 
         /// the Submitted state, after which the instance is persisted using the saga repository.
 
+        //////////////////// SCENARIO ////////////////////
+
         //InstanceState(o => o.CurrentState);
 
         //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
@@ -72,6 +74,8 @@ public class OrderStateMachine :
 
         // This can also be used to specify Order id as correlation id
         //GlobalTopology.Send.UseCorrelationId<SubmitOrder>(x => x.OrderId);
+
+        //////////////////// SCENARIO ////////////////////
 
         //InstanceState(o => o.CurrentState);
 
@@ -100,6 +104,8 @@ public class OrderStateMachine :
         // the _error queue. If the OrderAccepted event is received first, it would be discarded since it isn't accepted
         // in the Initial state. Below is an updated state machine that handles both of these scenarios.
 
+        //////////////////// SCENARIO ////////////////////
+
         //InstanceState(o => o.CurrentState);
 
         //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
@@ -124,39 +130,49 @@ public class OrderStateMachine :
         // be useful. In that case, adding behavior to copy the data to the instance could be added. Below, data from
         // the event is captured in both scenarios.
 
-        InstanceState(o => o.CurrentState);
+        //////////////////// SCENARIO ////////////////////
 
-        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //InstanceState(o => o.CurrentState);
 
-        Initially(
-            When(SubmitOrder)
-                .Then(x => x.Saga.OrderDate = x.Message.OrderDate)
-                .TransitionTo(Submitted),
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
+        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        During(Submitted,
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
+        //Initially(
+        //    When(SubmitOrder)
+        //        .Then(x => x.Saga.OrderDate = x.Message.OrderDate)
+        //        .TransitionTo(Submitted),
+        //    When(OrderAccepted)
+        //        .TransitionTo(Accepted));
 
-        During(Accepted,
-            When(SubmitOrder)
-                .Then(x => x.Saga.OrderDate = x.Message.OrderDate));
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .TransitionTo(Accepted));
+
+        //During(Accepted,
+        //    When(SubmitOrder)
+        //        .Then(x => x.Saga.OrderDate = x.Message.OrderDate));
 
         //When the event doesn't have a Guid that uniquely correlates to an instance, the .SelectId expression must be configured. In the below example, NewId is used to generate a sequential identifier which will be assigned to the instance CorrelationId. Any property on the event can be used to initialize the CorrelationId.
 
-        //Event(() => ExternalOrderSubmitted, e => e
-        //    .CorrelateBy(i => i.OrderNumber, x => x.Message.OrderNumber)
-        //    .SelectId(x => NewId.NextGuid()));
+        //////////////////// SCENARIO ////////////////////
+
+        InstanceState(o => o.CurrentState);
+
+        Event(() => ExternalOrderSubmitted, e => e
+            .CorrelateBy(i => i.OrderNumber, x => x.Message.OrderNumber)
+            .SelectId(x => NewId.NextGuid()));
+
+        Initially(
+            When(ExternalOrderSubmitted)
+            .Then(context =>
+            {
+                Console.WriteLine($"{ExternalOrderSubmitted} after : {context.Saga}");
+            })
+            .TransitionTo(ExternallySubmitted));
 
         //Event(() => ExternalOrderSubmitted, e => e
         //    .CorrelateBy((instance, context) => instance.OrderNumber == context.Message.OrderNumber)
         //    .SelectId(x => NewId.NextGuid()));
-
-
-
-
 
         // COMPOSITE EVENT
 

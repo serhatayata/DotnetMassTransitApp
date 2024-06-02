@@ -46,6 +46,11 @@ builder.Services.AddMassTransit(x =>
         {
             r.ConfigureSaga<OrderState>(context);
         });
+
+        cfg.ReceiveEndpoint("external-order-submitted", r =>
+        {
+            r.ConfigureSaga<OrderState>(context);
+        });
     });
 });
 

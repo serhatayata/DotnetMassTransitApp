@@ -9,7 +9,7 @@ public class OrderState : SagaStateMachineInstance
 
     public DateTime? OrderDate { get; set; }
 
-    //public string? OrderNumber { get; set; }
+    public string? OrderNumber { get; set; }
 
     //public Guid? ProcessingId { get; set; }
     //public Guid? ProcessOrderRequestId { get; set; }

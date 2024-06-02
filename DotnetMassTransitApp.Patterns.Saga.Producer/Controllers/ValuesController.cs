@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
+using Shared.Queue.Events;
 
 namespace DotnetMassTransitApp.Patterns.Saga.Producer.Controllers;
 
@@ -53,6 +54,21 @@ public class ValuesController : ControllerBase
         {
             OrderId = orderId,
             CompletionTime = TimeSpan.FromSeconds(10)
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("external-order-submitted")]
+    public async Task<IActionResult> ExternalOrderSubmitted()
+    {
+        var orderNumber = "606a7b67-b8e5-4111-94a6-9f47fc280a22";
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:external-order-submitted"));
+
+        await endpoint.Send<ExternalOrderSubmitted>(
+        new ExternalOrderSubmitted()
+        {
+            OrderNumber = orderNumber
         });
 
         return Ok();
