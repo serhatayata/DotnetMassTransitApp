@@ -100,33 +100,13 @@ public class OrderStateMachine :
         // the _error queue. If the OrderAccepted event is received first, it would be discarded since it isn't accepted
         // in the Initial state. Below is an updated state machine that handles both of these scenarios.
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
-
-        Initially(
-            When(SubmitOrder)
-                .TransitionTo(Submitted),
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
-
-        During(Submitted,
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
-
-        During(Accepted,
-            Ignore(SubmitOrder));
-
-        //////////////////// PART 3 ////////////////////
-
-        // Receiving a SubmitOrder message while in an Accepted state ignores the event. However, data in the event may
-        // be useful. In that case, adding behavior to copy the data to the instance could be added. Below, data from
-        // the event is captured in both scenarios.
+        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
         //Initially(
         //    When(SubmitOrder)
-        //        .Then(x => x.Saga.OrderDate = x.Message.OrderDate)
         //        .TransitionTo(Submitted),
         //    When(OrderAccepted)
         //        .TransitionTo(Accepted));
@@ -136,12 +116,33 @@ public class OrderStateMachine :
         //        .TransitionTo(Accepted));
 
         //During(Accepted,
-        //    When(SubmitOrder)
-        //        .Then(x => x.Saga.OrderDate = x.Message.OrderDate));
+        //    Ignore(SubmitOrder));
 
+        //////////////////// PART 3 ////////////////////
 
+        // Receiving a SubmitOrder message while in an Accepted state ignores the event. However, data in the event may
+        // be useful. In that case, adding behavior to copy the data to the instance could be added. Below, data from
+        // the event is captured in both scenarios.
 
+        InstanceState(o => o.CurrentState);
 
+        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
+        Initially(
+            When(SubmitOrder)
+                .Then(x => x.Saga.OrderDate = x.Message.OrderDate)
+                .TransitionTo(Submitted),
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
+
+        During(Submitted,
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
+
+        During(Accepted,
+            When(SubmitOrder)
+                .Then(x => x.Saga.OrderDate = x.Message.OrderDate));
 
         //When the event doesn't have a Guid that uniquely correlates to an instance, the .SelectId expression must be configured. In the below example, NewId is used to generate a sequential identifier which will be assigned to the instance CorrelationId. Any property on the event can be used to initialize the CorrelationId.
 
