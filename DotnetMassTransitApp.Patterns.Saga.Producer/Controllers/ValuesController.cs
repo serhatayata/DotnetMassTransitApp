@@ -19,7 +19,7 @@ public class ValuesController : ControllerBase
     [HttpGet("submit-order")]
     public async Task<IActionResult> SubmitOrderMethod()
     {
-        var orderId = new Guid("05e302da-abac-4e1c-9a4b-a347e7b357f8");
+        var orderId = new Guid("83d14f70-15cf-4c8a-b123-d57680293418");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:submit-order"));
 
         await endpoint.Send<SubmitOrder>(
@@ -45,7 +45,7 @@ public class ValuesController : ControllerBase
     [HttpGet("order-accepted")]
     public async Task<IActionResult> OrderAcceptedMethod()
     {
-        var orderId = new Guid("05e302da-abac-4e1c-9a4b-a347e7b357f8");
+        var orderId = new Guid("83d14f70-15cf-4c8a-b123-d57680293418");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:order-accepted"));
 
         await endpoint.Send<OrderAccepted>(

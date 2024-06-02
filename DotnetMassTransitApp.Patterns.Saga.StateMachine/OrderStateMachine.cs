@@ -73,26 +73,26 @@ public class OrderStateMachine :
         // This can also be used to specify Order id as correlation id
         //GlobalTopology.Send.UseCorrelationId<SubmitOrder>(x => x.OrderId);
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        Initially(
-            When(SubmitOrder)
-            .Then(context =>
-            {
-                Console.WriteLine($"{SubmitOrder} after : {context.Saga}");
-            })
-            .TransitionTo(Submitted));
+        //Initially(
+        //    When(SubmitOrder)
+        //    .Then(context =>
+        //    {
+        //        Console.WriteLine($"{SubmitOrder} after : {context.Saga}");
+        //    })
+        //    .TransitionTo(Submitted));
 
-        During(Submitted,
-            When(OrderAccepted)
-            .Then(context =>
-            {
-                Console.WriteLine($"{OrderAccepted} after : {context.Saga}");
-            })
-            .TransitionTo(Accepted));
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //    .Then(context =>
+        //    {
+        //        Console.WriteLine($"{OrderAccepted} after : {context.Saga}");
+        //    })
+        //    .TransitionTo(Accepted));
 
         //////////////////// PART 2 ////////////////////
 
@@ -100,20 +100,23 @@ public class OrderStateMachine :
         // the _error queue. If the OrderAccepted event is received first, it would be discarded since it isn't accepted
         // in the Initial state. Below is an updated state machine that handles both of these scenarios.
 
-        //Initially(
-        //    When(SubmitOrder)
-        //        .TransitionTo(Submitted),
-        //    When(OrderAccepted)
-        //        .TransitionTo(Accepted));
+        InstanceState(o => o.CurrentState);
 
-        //During(Submitted,
-        //    When(OrderAccepted)
-        //        .TransitionTo(Accepted));
+        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        //During(Accepted,
-        //    Ignore(SubmitOrder));
+        Initially(
+            When(SubmitOrder)
+                .TransitionTo(Submitted),
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
 
+        During(Submitted,
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
 
+        During(Accepted,
+            Ignore(SubmitOrder));
 
         //////////////////// PART 3 ////////////////////
 
