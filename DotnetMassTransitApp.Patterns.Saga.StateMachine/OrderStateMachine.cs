@@ -18,10 +18,10 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    //public Event<SubmitOrder> SubmitOrder { get; set; }
+    public Event<SubmitOrder> SubmitOrder { get; set; }
     //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
-    public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
+    //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
@@ -35,7 +35,7 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    //public State Submitted { get; set; }
+    public State Submitted { get; set; }
     //public State ExternallySubmitted { get; set; }
     //public State Accepted { get; set; }
     //public State Completed { get; set; }
@@ -219,20 +219,20 @@ public class OrderStateMachine :
 
         //////////////////// SCENARIO ////////////////////
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => OrderCancellationRequested, e =>
-        {
-            e.CorrelateById(context => context.Message.OrderId);
+        //Event(() => OrderCancellationRequested, e =>
+        //{
+        //    e.CorrelateById(context => context.Message.OrderId);
 
-            e.OnMissingInstance(m =>
-            {
-                return m.ExecuteAsync(x =>
-                {
-                    return x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId });
-                });
-            });
-        });
+        //    e.OnMissingInstance(m =>
+        //    {
+        //        return m.ExecuteAsync(x =>
+        //        {
+        //            return x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId });
+        //        });
+        //    });
+        //});
 
         // INITIAL INSERT
 
@@ -240,20 +240,24 @@ public class OrderStateMachine :
 
         //When using InsertOnInitial, it is critical that the saga repository is able to detect duplicate keys(in this case, CorrelationId - which is initialized using OrderId). In this case, having a clustered primary key on CorrelationId would prevent duplicate instances from being inserted. If an event is correlated using a different property, make sure that the database enforces a unique constraint on the instance property and the saga factory initializes the instance property with the event property value.
 
-        //Event(() => SubmitOrder, e =>
-        //{
-        //    e.CorrelateById(context => context.Message.OrderId);
+        //////////////////// SCENARIO ////////////////////
 
-        //    e.InsertOnInitial = true;
-        //    e.SetSagaFactory(context => new OrderState
-        //    {
-        //        CorrelationId = context.Message.OrderId
-        //    });
-        //});
+        InstanceState(o => o.CurrentState);
 
-        //Initially(
-        //    When(SubmitOrder)
-        //        .TransitionTo(Submitted));
+        Event(() => SubmitOrder, e =>
+        {
+            e.CorrelateById(context => context.Message.OrderId);
+
+            e.InsertOnInitial = true;
+            e.SetSagaFactory(context => new OrderState
+            {
+                CorrelationId = context.Message.OrderId
+            });
+        });
+
+        Initially(
+            When(SubmitOrder)
+                .TransitionTo(Submitted));
 
         //The database would use a unique constraint on the OrderNumber to prevent duplicates, which the saga repository would detect as an existing instance, which would then be loaded to consume the event.
 
