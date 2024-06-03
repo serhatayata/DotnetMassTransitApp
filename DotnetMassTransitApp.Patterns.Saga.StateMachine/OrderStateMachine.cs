@@ -322,17 +322,22 @@ public class OrderStateMachine :
         //    return Completed.Equals(currentState);
         //});
 
+
+
         // ACTIVITIES
 
 
 
         // PUBLISH
 
-        //Initially(
-        //    When(SubmitOrder)
-        //        .Publish(context => 
-        //            new OrderSubmitted() { OrderId = context.Saga.CorrelationId, OrderDate = context.Saga.OrderDate})
-        //        .TransitionTo(Submitted));
+        InstanceState(o => o.CurrentState);
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
+        Initially(
+            When(SubmitOrder)
+                .Publish(context =>
+                    new OrderSubmitted() { OrderId = context.Saga.CorrelationId, OrderDate = context.Saga.OrderDate })
+                .TransitionTo(Submitted));
 
         // Alternatively, a message initializer can be used to eliminate the Event class.
 

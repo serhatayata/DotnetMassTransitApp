@@ -5,6 +5,7 @@ using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
 using Shared.Queue.Contracts;
+using Shared.Queue.Events;
 using Shared.Queue.Saga;
 using System.Reflection;
 
@@ -60,6 +61,18 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("order-completed", r =>
         {
             r.ConfigureSaga<OrderState>(context);
+        });
+
+        cfg.Message<OrderSubmitted>(x =>
+        {
+            x.SetEntityName("order-submitted-exchange");
+        });
+
+        cfg.Publish<OrderSubmitted>(opt =>
+        {
+            opt.ExchangeType = "fanout";
+            opt.AutoDelete = false;
+            opt.Durable = true;
         });
     });
 });

@@ -24,7 +24,7 @@ public class ValuesController : ControllerBase
     [HttpGet("submit-order")]
     public async Task<IActionResult> SubmitOrderMethod()
     {
-        var orderId = new Guid("2ba0a590-4320-4939-984e-b23ff813e75c");
+        var orderId = new Guid("f7014284-e375-440e-83b2-beadde56db85");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:submit-order"));
 
         await endpoint.Send<SubmitOrder>(
