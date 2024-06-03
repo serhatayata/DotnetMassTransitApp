@@ -18,16 +18,16 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    //public Event<SubmitOrder> SubmitOrder { get; set; }
-    //public Event<OrderAccepted> OrderAccepted { get; set; }
-    public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
+    public Event<SubmitOrder> SubmitOrder { get; set; }
+    public Event<OrderAccepted> OrderAccepted { get; set; }
+    //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
     //// Added for composite event
-    //public Event OrderReady { get; set; }
+    public Event OrderReady { get; set; }
 
     //public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
     //public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; set; } = null!;
@@ -35,9 +35,9 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    //public State Submitted { get; set; }
-    public State ExternallySubmitted { get; set; }
-    //public State Accepted { get; set; }
+    public State Submitted { get; set; }
+    //public State ExternallySubmitted { get; set; }
+    public State Accepted { get; set; }
     //public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
@@ -156,19 +156,19 @@ public class OrderStateMachine :
 
         //////////////////// SCENARIO ////////////////////
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => ExternalOrderSubmitted, e => e
-            .CorrelateBy(i => i.OrderNumber, x => x.Message.OrderNumber)
-            .SelectId(x => NewId.NextGuid()));
+        //Event(() => ExternalOrderSubmitted, e => e
+        //    .CorrelateBy(i => i.OrderNumber, x => x.Message.OrderNumber)
+        //    .SelectId(x => NewId.NextGuid()));
 
-        Initially(
-            When(ExternalOrderSubmitted)
-            .Then(context =>
-            {
-                Console.WriteLine($"{ExternalOrderSubmitted} after : {context.Saga}");
-            })
-            .TransitionTo(ExternallySubmitted));
+        //Initially(
+        //    When(ExternalOrderSubmitted)
+        //    .Then(context =>
+        //    {
+        //        Console.WriteLine($"{ExternalOrderSubmitted} after : {context.Saga}");
+        //    })
+        //    .TransitionTo(ExternallySubmitted));
 
         //Event(() => ExternalOrderSubmitted, e => e
         //    .CorrelateBy((instance, context) => instance.OrderNumber == context.Message.OrderNumber)
@@ -179,27 +179,34 @@ public class OrderStateMachine :
         // A composite event is configured by specifying one or more events that must be consumed, after which the composite event will be raised.A composite event uses an instance property to keep track of the required events, which is   specified during configuration.
         // To define a composite event, the required events must first be configured along with any event behaviors, after   which the composite event can be configured.
 
-        //Initially(
-        //    When(SubmitOrder)
-        //        .TransitionTo(Submitted),
-        //    When(OrderAccepted)
-        //        .TransitionTo(Accepted));
-
-        //During(Submitted,
-        //    When(OrderAccepted)
-        //        .TransitionTo(Accepted));
-
         // NOTE : The order of events being declared can impact the order in which they execute. Therefore, it is best to           declare composite events at the end of the state machine declaration, after all other events and behaviors        are declared. That way, the composite events will be raised after the dependent event behaviors.
 
         // Once the SubmitOrder and OrderAccepted events have been consumed, the OrderReady event will be triggered.
-        //CompositeEvent(() => OrderReady, x => x.ReadyEventStatus, SubmitOrder, OrderAccepted);
 
-        //DuringAny(
-        //    When(OrderReady)
-        //        .Then(context => Console.WriteLine("Order Ready: {0}", context.Saga.CorrelationId)));
+        InstanceState(o => o.CurrentState);
 
+        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
+        Initially(
+            When(SubmitOrder)
+                .TransitionTo(Submitted),
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
 
+        During(Submitted,
+            When(OrderAccepted)
+                .TransitionTo(Accepted));
+
+        // This will change OrderState row ReadyEventStatus column to OrderReady status
+        CompositeEvent(() => OrderReady, x => x.ReadyEventStatus, SubmitOrder, OrderAccepted);
+
+        DuringAny(
+            When(OrderReady)
+                .Then(context =>
+                {
+                    Console.WriteLine("Order Ready: {0}", context.Saga.CorrelationId);
+                }));
 
 
         // MISSING INSTANCE
