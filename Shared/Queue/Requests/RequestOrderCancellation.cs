@@ -2,5 +2,5 @@
 
 public class RequestOrderCancellation
 {
-    public Guid OrderId { get; }
+    public Guid OrderId { get; set; }
 }

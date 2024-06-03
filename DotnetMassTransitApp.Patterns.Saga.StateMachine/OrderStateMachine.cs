@@ -18,16 +18,16 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    public Event<SubmitOrder> SubmitOrder { get; set; }
-    public Event<OrderAccepted> OrderAccepted { get; set; }
+    //public Event<SubmitOrder> SubmitOrder { get; set; }
+    //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
-    //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
+    public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
     //// Added for composite event
-    public Event OrderReady { get; set; }
+    //public Event OrderReady { get; set; }
 
     //public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
     //public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; set; } = null!;
@@ -35,9 +35,9 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    public State Submitted { get; set; }
+    //public State Submitted { get; set; }
     //public State ExternallySubmitted { get; set; }
-    public State Accepted { get; set; }
+    //public State Accepted { get; set; }
     //public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
@@ -183,30 +183,32 @@ public class OrderStateMachine :
 
         // Once the SubmitOrder and OrderAccepted events have been consumed, the OrderReady event will be triggered.
 
-        InstanceState(o => o.CurrentState);
+        //////////////////// SCENARIO ////////////////////
 
-        Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //InstanceState(o => o.CurrentState);
 
-        Initially(
-            When(SubmitOrder)
-                .TransitionTo(Submitted),
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
+        //Event(() => OrderAccepted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        During(Submitted,
-            When(OrderAccepted)
-                .TransitionTo(Accepted));
+        //Initially(
+        //    When(SubmitOrder)
+        //        .TransitionTo(Submitted),
+        //    When(OrderAccepted)
+        //        .TransitionTo(Accepted));
 
-        // This will change OrderState row ReadyEventStatus column to OrderReady status
-        CompositeEvent(() => OrderReady, x => x.ReadyEventStatus, SubmitOrder, OrderAccepted);
+        //During(Submitted,
+        //    When(OrderAccepted)
+        //        .TransitionTo(Accepted));
 
-        DuringAny(
-            When(OrderReady)
-                .Then(context =>
-                {
-                    Console.WriteLine("Order Ready: {0}", context.Saga.CorrelationId);
-                }));
+        //// This will change OrderState row ReadyEventStatus column to OrderReady status
+        //CompositeEvent(() => OrderReady, x => x.ReadyEventStatus, SubmitOrder, OrderAccepted);
+
+        //DuringAny(
+        //    When(OrderReady)
+        //        .Then(context =>
+        //        {
+        //            Console.WriteLine("Order Ready: {0}", context.Saga.CorrelationId);
+        //        }));
 
 
         // MISSING INSTANCE
@@ -215,18 +217,22 @@ public class OrderStateMachine :
         //the order was not found.Instead of generating a Fault, the response is more explicit. Other missing
         //instance options include Discard, Fault, and Execute (a synchronous version of ExecuteAsync).
 
-        //Event(() => OrderCancellationRequested, e =>
-        //{
-        //    e.CorrelateById(context => context.Message.OrderId);
+        //////////////////// SCENARIO ////////////////////
 
-        //    e.OnMissingInstance(m =>
-        //    {
-        //        return m.ExecuteAsync(x => x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId}));
-        //    });
-        //});
+        InstanceState(o => o.CurrentState);
 
+        Event(() => OrderCancellationRequested, e =>
+        {
+            e.CorrelateById(context => context.Message.OrderId);
 
-
+            e.OnMissingInstance(m =>
+            {
+                return m.ExecuteAsync(x =>
+                {
+                    return x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId });
+                });
+            });
+        });
 
         // INITIAL INSERT
 

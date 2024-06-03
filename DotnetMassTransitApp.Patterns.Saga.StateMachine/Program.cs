@@ -51,6 +51,11 @@ builder.Services.AddMassTransit(x =>
         {
             r.ConfigureSaga<OrderState>(context);
         });
+
+        cfg.ReceiveEndpoint("order-cancellation-requested", r =>
+        {
+            r.ConfigureSaga<OrderState>(context);
+        });
     });
 });
 

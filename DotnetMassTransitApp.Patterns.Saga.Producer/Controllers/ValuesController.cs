@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
 using Shared.Queue.Events;
+using Shared.Queue.Requests;
 
 namespace DotnetMassTransitApp.Patterns.Saga.Producer.Controllers;
 
@@ -10,11 +11,14 @@ namespace DotnetMassTransitApp.Patterns.Saga.Producer.Controllers;
 public class ValuesController : ControllerBase
 {
     private readonly ISendEndpointProvider _sendEndpointProvider;
+    private readonly IRequestClient<RequestOrderCancellation> _cancelOrderRequestClient;
 
     public ValuesController(
-        ISendEndpointProvider sendEndpointProvider)
+        ISendEndpointProvider sendEndpointProvider,
+        IRequestClient<RequestOrderCancellation> cancelOrderRequestClient)
     {
         _sendEndpointProvider = sendEndpointProvider;
+        _cancelOrderRequestClient = cancelOrderRequestClient;
     }
 
     [HttpGet("submit-order")]
@@ -72,5 +76,31 @@ public class ValuesController : ControllerBase
         });
 
         return Ok();
+    }
+
+    [HttpGet("order-cancellation-request")]
+    public async Task<IActionResult> OrderCancellationRequest()
+    {
+        try
+        {
+            var message = new RequestOrderCancellation() { OrderId = new Guid("7955408b-6142-4d1f-9a96-510c82699ee9") };
+            var response = await _cancelOrderRequestClient.GetResponse<RequestOrderCancellation, OrderNotFound>(
+                message: message);
+
+            if (response.Is(out Response<RequestOrderCancellation> canceled))
+            {
+                return Ok();
+            }
+            else if (response.Is(out Response<OrderNotFound> responseB))
+            {
+                return NotFound();
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
     }
 }
