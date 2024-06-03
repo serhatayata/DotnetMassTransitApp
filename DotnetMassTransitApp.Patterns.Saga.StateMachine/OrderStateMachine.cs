@@ -22,7 +22,7 @@ public class OrderStateMachine :
     //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
-    public Event<OrderCompleted> OrderCompleted { get; set; }
+    //public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
@@ -38,7 +38,7 @@ public class OrderStateMachine :
     public State Submitted { get; set; }
     //public State ExternallySubmitted { get; set; }
     //public State Accepted { get; set; }
-    public State Completed { get; set; }
+    //public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
 
@@ -300,25 +300,27 @@ public class OrderStateMachine :
 
         //To use a different completed expression, such as one that checks if the instance is in a Completed state, use the SetCompleted method
 
-        InstanceState(o => o.CurrentState);
+        //////////////////// SCENARIO ////////////////////
 
-        Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //InstanceState(o => o.CurrentState);
 
-        Initially(
-            When(SubmitOrder)
-            .TransitionTo(Submitted));
+        //Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        DuringAny(
-            When(OrderCompleted)
-                .TransitionTo(Completed));
+        //Initially(
+        //    When(SubmitOrder)
+        //    .TransitionTo(Submitted));
 
-        SetCompleted(async instance =>
-        {
-            State<OrderState> currentState = await this.GetState(instance);
+        //DuringAny(
+        //    When(OrderCompleted)
+        //        .TransitionTo(Completed));
 
-            return Completed.Equals(currentState);
-        });
+        //SetCompleted(async instance =>
+        //{
+        //    State<OrderState> currentState = await this.GetState(instance);
+
+        //    return Completed.Equals(currentState);
+        //});
 
         // ACTIVITIES
 
