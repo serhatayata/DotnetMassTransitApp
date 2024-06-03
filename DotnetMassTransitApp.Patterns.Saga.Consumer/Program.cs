@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMassTransit(mt =>
 {
     mt.AddConsumer<OrderSubmittedConsumer>();
+    mt.AddConsumer<UpdateAccountHistoryConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -27,6 +28,18 @@ builder.Services.AddMassTransit(mt =>
             ep.ConfigureConsumer<OrderSubmittedConsumer>(cntx);
 
             ep.Bind(exchangeName: "order-submitted-exchange", clb =>
+            {
+                clb.ExchangeType = "fanout";
+                clb.AutoDelete = false;
+                clb.Durable = true;
+            });
+        });
+
+        cfg.ReceiveEndpoint(queueName: "update-account-history", ep =>
+        {
+            ep.ConfigureConsumer<UpdateAccountHistoryConsumer>(cntx);
+
+            ep.Bind(exchangeName: "update-account-history-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
                 clb.AutoDelete = false;

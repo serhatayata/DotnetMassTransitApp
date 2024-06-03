@@ -330,14 +330,16 @@ public class OrderStateMachine :
 
         // PUBLISH
 
-        InstanceState(o => o.CurrentState);
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //////////////////// SCENARIO ////////////////////
 
-        Initially(
-            When(SubmitOrder)
-                .Publish(context =>
-                    new OrderSubmitted() { OrderId = context.Saga.CorrelationId, OrderDate = context.Saga.OrderDate })
-                .TransitionTo(Submitted));
+        //InstanceState(o => o.CurrentState);
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
+        //Initially(
+        //    When(SubmitOrder)
+        //        .Publish(context =>
+        //            new OrderSubmitted() { OrderId = context.Saga.CorrelationId, OrderDate = context.Saga.OrderDate })
+        //        .TransitionTo(Submitted));
 
         // Alternatively, a message initializer can be used to eliminate the Event class.
 
@@ -352,12 +354,17 @@ public class OrderStateMachine :
 
         // SEND
 
-        //var accountServiceAddress = new Uri(string.Empty); // can be set
-        //Initially(
-        //    When(SubmitOrder)
-        //        .Send(accountServiceAddress, 
-        //              context => new UpdateAccountHistory() { OrderId = context.Saga.CorrelationId })
-        //        .TransitionTo(Submitted));
+        //////////////////// SCENARIO ////////////////////
+
+        InstanceState(o => o.CurrentState);
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+
+        var accountServiceAddress = new Uri("exchange:update-account-history-exchange"); // can be set
+        Initially(
+            When(SubmitOrder)
+                .Send(accountServiceAddress,
+                      context => new UpdateAccountHistory() { OrderId = context.Saga.CorrelationId })
+                .TransitionTo(Submitted));
 
         //// Alternatively
 
