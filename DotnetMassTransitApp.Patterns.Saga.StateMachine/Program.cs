@@ -56,6 +56,11 @@ builder.Services.AddMassTransit(x =>
         {
             r.ConfigureSaga<OrderState>(context);
         });
+
+        cfg.ReceiveEndpoint("order-completed", r =>
+        {
+            r.ConfigureSaga<OrderState>(context);
+        });
     });
 });
 

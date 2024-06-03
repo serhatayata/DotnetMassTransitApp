@@ -103,4 +103,19 @@ public class ValuesController : ControllerBase
             return BadRequest();
         }
     }
+
+    [HttpGet("order-completed")]
+    public async Task<IActionResult> OrderCompletedMethod()
+    {
+        var orderId = new Guid("01535229-6364-4827-8e4d-e395122a5ff6");
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:order-completed"));
+
+        await endpoint.Send<OrderCompleted>(
+        new OrderCompleted()
+        {
+            OrderId = orderId
+        });
+
+        return Ok();
+    }
 }

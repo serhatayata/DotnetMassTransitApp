@@ -18,11 +18,11 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    public Event<SubmitOrder> SubmitOrder { get; set; }
+    //public Event<SubmitOrder> SubmitOrder { get; set; }
     //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
-    //public Event<OrderCompleted> OrderCompleted { get; set; }
+    public Event<OrderCompleted> OrderCompleted { get; set; }
     //public Event<CreateOrder> OrderSubmitted { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
@@ -35,10 +35,10 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    public State Submitted { get; set; }
+    //public State Submitted { get; set; }
     //public State ExternallySubmitted { get; set; }
     //public State Accepted { get; set; }
-    //public State Completed { get; set; }
+    public State Completed { get; set; }
     //public State Canceled { get; set; }
     //public State Created { get; set; }
 
@@ -242,22 +242,22 @@ public class OrderStateMachine :
 
         //////////////////// SCENARIO ////////////////////
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => SubmitOrder, e =>
-        {
-            e.CorrelateById(context => context.Message.OrderId);
+        //Event(() => SubmitOrder, e =>
+        //{
+        //    e.CorrelateById(context => context.Message.OrderId);
 
-            e.InsertOnInitial = true;
-            e.SetSagaFactory(context => new OrderState
-            {
-                CorrelationId = context.Message.OrderId
-            });
-        });
+        //    e.InsertOnInitial = true;
+        //    e.SetSagaFactory(context => new OrderState
+        //    {
+        //        CorrelationId = context.Message.OrderId
+        //    });
+        //});
 
-        Initially(
-            When(SubmitOrder)
-                .TransitionTo(Submitted));
+        //Initially(
+        //    When(SubmitOrder)
+        //        .TransitionTo(Submitted));
 
         //The database would use a unique constraint on the OrderNumber to prevent duplicates, which the saga repository would detect as an existing instance, which would then be loaded to consume the event.
 
@@ -278,18 +278,19 @@ public class OrderStateMachine :
         //    When(SubmitOrder)
         //        .TransitionTo(Submitted));
 
-
-
-
         // COMPLETED INSTANCE
 
         // By default, instances are not removed from the saga repository. To configure completed instance removal, specify  the method used to determine if an instance has completed.
 
-        //Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+        //////////////////// SCENARIO ////////////////////
 
-        //DuringAny(
-        //    When(OrderCompleted)
-        //        .Finalize());
+        InstanceState(o => o.CurrentState);
+
+        Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+
+        DuringAny(
+            When(OrderCompleted)
+                .Finalize());
 
         //SetCompletedWhenFinalized();
 
