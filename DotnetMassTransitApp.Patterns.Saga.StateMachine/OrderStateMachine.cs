@@ -18,7 +18,7 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    //public Event<SubmitOrder> SubmitOrder { get; set; }
+    public Event<SubmitOrder> SubmitOrder { get; set; }
     //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
@@ -35,7 +35,7 @@ public class OrderStateMachine :
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
-    //public State Submitted { get; set; }
+    public State Submitted { get; set; }
     //public State ExternallySubmitted { get; set; }
     //public State Accepted { get; set; }
     public State Completed { get; set; }
@@ -284,15 +284,15 @@ public class OrderStateMachine :
 
         //////////////////// SCENARIO ////////////////////
 
-        InstanceState(o => o.CurrentState);
+        //InstanceState(o => o.CurrentState);
 
-        Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+        //Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
 
-        DuringAny(
-            When(OrderCompleted)
-                .Finalize());
+        //DuringAny(
+        //    When(OrderCompleted)
+        //        .Finalize());
 
-        //SetCompletedWhenFinalized();
+        ////SetCompletedWhenFinalized();
 
         //When the instance consumes the OrderCompleted event, the instance is finalized (which transitions the instance
         //to the Final state). The SetCompletedWhenFinalized method defines an instance in the Final state as completed
@@ -300,21 +300,25 @@ public class OrderStateMachine :
 
         //To use a different completed expression, such as one that checks if the instance is in a Completed state, use the SetCompleted method
 
-        //Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+        InstanceState(o => o.CurrentState);
 
-        //DuringAny(
-        //    When(OrderCompleted)
-        //        .TransitionTo(Completed));
+        Event(() => OrderCompleted, x => x.CorrelateById(context => context.Message.OrderId));
+        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        //SetCompleted(async instance =>
-        //{
-        //    State<TInstance> currentState = await this.GetState(instance);
+        Initially(
+            When(SubmitOrder)
+            .TransitionTo(Submitted));
 
-        //    return Completed.Equals(currentState);
-        //});
+        DuringAny(
+            When(OrderCompleted)
+                .TransitionTo(Completed));
 
+        SetCompleted(async instance =>
+        {
+            State<OrderState> currentState = await this.GetState(instance);
 
-
+            return Completed.Equals(currentState);
+        });
 
         // ACTIVITIES
 
