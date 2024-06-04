@@ -25,7 +25,7 @@ public class ValuesController : ControllerBase
     [HttpGet("submit-order")]
     public async Task<IActionResult> SubmitOrderMethod()
     {
-        var orderId = new Guid("2fe4c617-e36f-4d4a-b413-a95c08338f50");
+        var orderId = new Guid("4c02de9a-bcaa-4824-a004-ebbd4e0ff1c9");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:submit-order"));
 
         await endpoint.Send<SubmitOrder>(
@@ -51,7 +51,7 @@ public class ValuesController : ControllerBase
     [HttpGet("order-accepted")]
     public async Task<IActionResult> OrderAcceptedMethod()
     {
-        var orderId = new Guid("74ce06a3-86e6-4844-8e74-09833b41f3e7");
+        var orderId = new Guid("4c02de9a-bcaa-4824-a004-ebbd4e0ff1c9");
         var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:order-accepted"));
 
         await endpoint.Send<OrderAccepted>(
@@ -150,6 +150,20 @@ public class ValuesController : ControllerBase
         {
             CorrelationId = correlationId
         });
+
+        return Ok();
+    }
+
+    [HttpGet("order-completion-timeout-expired")]
+    public async Task<IActionResult> OrderCompletionTimeoutExpiredMethod()
+    {
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:order-completion-timeout-expired"));
+
+        await endpoint.Send<OrderCompletionTimeoutExpired>(
+        new OrderCompletionTimeoutExpired()
+        {
+            OrderId = new Guid("05e302Da-abac-4e1c-9a4b-a347e7b357f8")
+        }); ;
 
         return Ok();
     }

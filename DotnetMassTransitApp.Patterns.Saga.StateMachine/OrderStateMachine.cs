@@ -18,22 +18,22 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    //public Event<SubmitOrder> SubmitOrder { get; set; }
-    //public Event<OrderAccepted> OrderAccepted { get; set; }
+    public Event<SubmitOrder> SubmitOrder { get; set; }
+    public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
-    public Event<CreateOrder> CreateOrder { get; set; }
+    //public Event<CreateOrder> CreateOrder { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
     //// Added for composite event
     //public Event OrderReady { get; set; }
 
-    public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
+    //public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
     //public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; set; } = null!;
 
 
-    //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
+    public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
     public State Submitted { get; set; }
     public State ExternallySubmitted { get; set; }
@@ -413,49 +413,49 @@ public class OrderStateMachine :
         // There are scenarios where it is required to wait for the response from the state machine. In these scenarios
         // the information that is required to respond to the original request should be stored.
 
-        InstanceState(m => m.CurrentState);
-        Request(() => ProcessOrder, order => order.ProcessingId, config => { config.Timeout = TimeSpan.Zero; });
+        //InstanceState(m => m.CurrentState);
+        //Request(() => ProcessOrder, order => order.ProcessingId, config => { config.Timeout = TimeSpan.Zero; });
 
-        Initially(
-            When(CreateOrder)
-                .Then(context =>
-                {
-                    context.Saga.CorrelationId = context.Message.CorrelationId;
-                    context.Saga.ProcessingId = Guid.NewGuid();
+        //Initially(
+        //    When(CreateOrder)
+        //        .Then(context =>
+        //        {
+        //            context.Saga.CorrelationId = context.Message.CorrelationId;
+        //            context.Saga.ProcessingId = Guid.NewGuid();
 
-                    context.Saga.OrderId = Guid.NewGuid();
+        //            context.Saga.OrderId = Guid.NewGuid();
 
-                    context.Saga.RequestId = context.RequestId;
-                    context.Saga.ResponseAddress = context.ResponseAddress;
-                })
-                .Request(ProcessOrder, context =>
-                {
-                    return new ProcessOrder() { OrderId = context.Saga.OrderId, ProcessingId = context.Saga.ProcessingId!.Value };
-                })
-                .TransitionTo(ProcessOrder.Pending));
+        //            context.Saga.RequestId = context.RequestId;
+        //            context.Saga.ResponseAddress = context.ResponseAddress;
+        //        })
+        //        .Request(ProcessOrder, context =>
+        //        {
+        //            return new ProcessOrder() { OrderId = context.Saga.OrderId, ProcessingId = context.Saga.ProcessingId!.Value };
+        //        })
+        //        .TransitionTo(ProcessOrder.Pending));
 
-        During(ProcessOrder.Pending,
-            When(ProcessOrder.Completed)
-                .TransitionTo(Created)
-                .ThenAsync(async context =>
-                {
-                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                    await endpoint.Send(context.Saga, r => r.RequestId = context.Saga.RequestId);
-                }),
-            When(ProcessOrder.Faulted)
-                .TransitionTo(Canceled)
-                .ThenAsync(async context =>
-                {
-                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                    await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Faulted" }, r => r.RequestId = context.Saga.RequestId);
-                }),
-            When(ProcessOrder.TimeoutExpired)
-                .TransitionTo(Canceled)
-                .ThenAsync(async context =>
-                {
-                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                    await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Timeout" }, r => r.RequestId = context.Saga.RequestId);
-                }));
+        //During(ProcessOrder.Pending,
+        //    When(ProcessOrder.Completed)
+        //        .TransitionTo(Created)
+        //        .ThenAsync(async context =>
+        //        {
+        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+        //            await endpoint.Send(context.Saga, r => r.RequestId = context.Saga.RequestId);
+        //        }),
+        //    When(ProcessOrder.Faulted)
+        //        .TransitionTo(Canceled)
+        //        .ThenAsync(async context =>
+        //        {
+        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+        //            await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Faulted" }, r => r.RequestId = context.Saga.RequestId);
+        //        }),
+        //    When(ProcessOrder.TimeoutExpired)
+        //        .TransitionTo(Canceled)
+        //        .ThenAsync(async context =>
+        //        {
+        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+        //            await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Timeout" }, r => r.RequestId = context.Saga.RequestId);
+        //        }));
 
 
 
@@ -466,19 +466,14 @@ public class OrderStateMachine :
 
         // The configuration specifies the Delay, which can be overridden by the schedule activity, and the correlation      expression for the Received event. The state machine can consume the Received event as shown. The                 OrderCompletionTimeoutTokenId is a Guid? instance property used to keep track of the scheduled message tokenId    which can later be used to unschedule the event.
 
+        // As stated below, the delay can be overridden by the Schedule activity. Both instance and message (context.Data) content can be used to calculate the delay.
+
         //Schedule(() => OrderCompletionTimeout, instance => instance.OrderCompletionTimeoutTokenId, s =>
         //{
-        //    s.Delay = TimeSpan.FromDays(30);
+        //    s.Delay = TimeSpan.FromSeconds(10);
 
         //    s.Received = r => r.CorrelateById(context => context.Message.OrderId);
         //});
-
-        //During(Accepted,
-        //    When(OrderCompletionTimeout.Received)
-        //        .PublishAsync(context => context.Init<OrderCompleted>(new { OrderId = context.Saga.CorrelationId }))
-        //        .Finalize());
-
-        // As stated below, the delay can be overridden by the Schedule activity. Both instance and message (context.Data) content can be used to calculate the delay.
 
         //During(Submitted,
         //    When(OrderAccepted)
@@ -490,9 +485,6 @@ public class OrderStateMachine :
         //        .Schedule(OrderCompletionTimeout, context => context.Init<OrderCompletionTimeoutExpired>(new { OrderId = context.Saga.CorrelationId }),
         //            context => context.Message.CompletionTime)
         //        .TransitionTo(Accepted));
-
-        // Once the scheduled event is received, the OrderCompletionTimeoutTokenId property is cleared.
-        // If the scheduled event is no longer needed, the Unschedule activity can be used.
 
         //DuringAny(
         //    When(OrderCancellationRequested)

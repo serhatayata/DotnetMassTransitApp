@@ -20,7 +20,7 @@ public class OrderState : SagaStateMachineInstance
     public Uri? ResponseAddress { get; set; }
     public Guid OrderId { get; set; }
 
-    //public Guid? OrderCompletionTimeoutTokenId { get; set; }
+    public Guid? OrderCompletionTimeoutTokenId { get; set; }
 
     //public byte[] RowVersion { get; set; }
 }

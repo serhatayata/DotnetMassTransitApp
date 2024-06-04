@@ -46,6 +46,13 @@ builder.Services.AddMassTransit(x =>
             x.SetEntityName("process-order-exchange");
         });
 
+        cfg.Message<OrderCompleted>(x =>
+        {
+            x.SetEntityName("order-completed-exchange");
+        });
+
+
+
         cfg.ReceiveEndpoint("submit-order", r =>
         {
             r.ConfigureSaga<OrderState>(context);
@@ -72,6 +79,11 @@ builder.Services.AddMassTransit(x =>
         });
 
         cfg.ReceiveEndpoint("create-order", r =>
+        {
+            r.ConfigureSaga<OrderState>(context);
+        });
+
+        cfg.ReceiveEndpoint("order-completion-timeout-expired", r =>
         {
             r.ConfigureSaga<OrderState>(context);
         });
