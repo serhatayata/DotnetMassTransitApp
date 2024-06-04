@@ -18,33 +18,33 @@ namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
 public class OrderStateMachine :
     MassTransitStateMachine<OrderState>
 {
-    public Event<SubmitOrder> SubmitOrder { get; set; }
+    //public Event<SubmitOrder> SubmitOrder { get; set; }
     //public Event<OrderAccepted> OrderAccepted { get; set; }
     //public Event<ExternalOrderSubmitted> ExternalOrderSubmitted { get; set; }
     //public Event<RequestOrderCancellation> OrderCancellationRequested { get; set; }
     //public Event<OrderCompleted> OrderCompleted { get; set; }
-    //public Event<CreateOrder> OrderSubmitted { get; set; }
+    public Event<CreateOrder> CreateOrder { get; set; }
     //public Event<OrderClosed> OrderClosed { get; set; } = null!;
 
     //// Added for composite event
     //public Event OrderReady { get; set; }
 
-    //public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
+    public Request<OrderState, ProcessOrder, OrderProcessed> ProcessOrder { get; set; }
     //public Request<OrderState, ValidateOrder, OrderValidated> ValidateOrder { get; set; } = null!;
 
 
     //public Schedule<OrderState, OrderCompletionTimeoutExpired> OrderCompletionTimeout { get; set; }
 
     public State Submitted { get; set; }
-    //public State ExternallySubmitted { get; set; }
-    //public State Accepted { get; set; }
-    //public State Completed { get; set; }
-    //public State Canceled { get; set; }
-    //public State Created { get; set; }
+    public State ExternallySubmitted { get; set; }
+    public State Accepted { get; set; }
+    public State Completed { get; set; }
+    public State Canceled { get; set; }
+    public State Created { get; set; }
 
-    //public State Processed { get; set; }
-    //public State ProcessFaulted { get; set; }
-    //public State ProcessTimeoutExpired { get; set; }
+    public State Processed { get; set; }
+    public State ProcessFaulted { get; set; }
+    public State ProcessTimeoutExpired { get; set; }
 
 
     public OrderStateMachine()
@@ -356,15 +356,15 @@ public class OrderStateMachine :
 
         //////////////////// SCENARIO ////////////////////
 
-        InstanceState(o => o.CurrentState);
-        Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
+        //InstanceState(o => o.CurrentState);
+        //Event(() => SubmitOrder, x => x.CorrelateById(y => y.Message.OrderId));
 
-        var accountServiceAddress = new Uri("exchange:update-account-history-exchange"); // can be set
-        Initially(
-            When(SubmitOrder)
-                .Send(accountServiceAddress,
-                      context => new UpdateAccountHistory() { OrderId = context.Saga.CorrelationId })
-                .TransitionTo(Submitted));
+        //var accountServiceAddress = new Uri("exchange:update-account-history-exchange"); // can be set
+        //Initially(
+        //    When(SubmitOrder)
+        //        .Send(accountServiceAddress,
+        //              context => new UpdateAccountHistory() { OrderId = context.Saga.CorrelationId })
+        //        .TransitionTo(Submitted));
 
         //// Alternatively
 
@@ -384,66 +384,78 @@ public class OrderStateMachine :
         //response experience (either through a different response type, or a response that indicates an instance was not
         //found).
 
+        //////////////////// SCENARIO ////////////////////
+
+        //InstanceState(o => o.CurrentState);
+
         //Event(() => OrderCancellationRequested, e =>
         //{
         //    e.CorrelateById(context => context.Message.OrderId);
 
         //    e.OnMissingInstance(m =>
         //    {
-        //        return m.ExecuteAsync(x => x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId }));
+        //        return m.ExecuteAsync(x =>
+        //        {
+        //            return x.RespondAsync<OrderNotFound>(new OrderNotFound() { OrderId = x.Message.OrderId });
+        //        });
         //    });
         //});
 
         //DuringAny(
         //    When(OrderCancellationRequested)
-        //        .RespondAsync(context => context.Init<OrderCanceled>(new { OrderId = context.Saga.CorrelationId }))
+        //        .RespondAsync(context =>
+        //        {
+        //            return context.Init<OrderCanceled>(new { OrderId = context.Saga.CorrelationId });
+        //        })
         //        .TransitionTo(Canceled));
 
 
         // There are scenarios where it is required to wait for the response from the state machine. In these scenarios
         // the information that is required to respond to the original request should be stored.
 
-        //InstanceState(m => m.CurrentState);
-        //Event(() => OrderSubmitted);
-        //Request(() => ProcessOrder, order => order.ProcessingId, config => { config.Timeout = TimeSpan.Zero; });
+        InstanceState(m => m.CurrentState);
+        Request(() => ProcessOrder, order => order.ProcessingId, config => { config.Timeout = TimeSpan.Zero; });
 
-        //Initially(
-        //    When(OrderSubmitted)
-        //        .Then(context =>
-        //        {
-        //            context.Saga.CorrelationId = context.Message.CorrelationId;
-        //            context.Saga.ProcessingId = Guid.NewGuid();
+        Initially(
+            When(CreateOrder)
+                .Then(context =>
+                {
+                    context.Saga.CorrelationId = context.Message.CorrelationId;
+                    context.Saga.ProcessingId = Guid.NewGuid();
 
-        //            context.Saga.OrderId = Guid.NewGuid();
+                    context.Saga.OrderId = Guid.NewGuid();
 
-        //            context.Saga.RequestId = context.RequestId;
-        //            context.Saga.ResponseAddress = context.ResponseAddress;
-        //        })
-        //        .Request(ProcessOrder, context => new ProcessOrder() { OrderId = context.Saga.OrderId, ProcessingId = context.Saga.ProcessingId!.Value })
-        //        .TransitionTo(ProcessOrder.Pending));
+                    context.Saga.RequestId = context.RequestId;
+                    context.Saga.ResponseAddress = context.ResponseAddress;
+                })
+                .Request(ProcessOrder, context =>
+                {
+                    return new ProcessOrder() { OrderId = context.Saga.OrderId, ProcessingId = context.Saga.ProcessingId!.Value };
+                })
+                .TransitionTo(ProcessOrder.Pending));
 
-        //During(ProcessOrder.Pending,
-        //    When(ProcessOrder.Completed)
-        //        .TransitionTo(Created)
-        //        .ThenAsync(async context =>
-        //        {
-        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-        //            await endpoint.Send(context.Saga, r => r.RequestId = context.Saga.RequestId);
-        //        }),
-        //    When(ProcessOrder.Faulted)
-        //        .TransitionTo(Canceled)
-        //        .ThenAsync(async context =>
-        //        {
-        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-        //            await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Faulted" }, r => r.RequestId = context.Saga.RequestId);
-        //        }),
-        //    When(ProcessOrder.TimeoutExpired)
-        //        .TransitionTo(Canceled)
-        //        .ThenAsync(async context =>
-        //        {
-        //            var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-        //            await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Timeout"}, r => r.RequestId = context.Saga.RequestId);
-        //        }));
+        During(ProcessOrder.Pending,
+            When(ProcessOrder.Completed)
+                .TransitionTo(Created)
+                .ThenAsync(async context =>
+                {
+                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+                    await endpoint.Send(context.Saga, r => r.RequestId = context.Saga.RequestId);
+                }),
+            When(ProcessOrder.Faulted)
+                .TransitionTo(Canceled)
+                .ThenAsync(async context =>
+                {
+                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+                    await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Faulted" }, r => r.RequestId = context.Saga.RequestId);
+                }),
+            When(ProcessOrder.TimeoutExpired)
+                .TransitionTo(Canceled)
+                .ThenAsync(async context =>
+                {
+                    var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
+                    await endpoint.Send(new OrderCanceled() { OrderId = context.Saga.OrderId, Reason = "Timeout" }, r => r.RequestId = context.Saga.RequestId);
+                }));
 
 
 

@@ -13,12 +13,12 @@ public class OrderState : SagaStateMachineInstance
 
     public int ReadyEventStatus { get; set; }
 
-    //public Guid? ProcessingId { get; set; }
+    public Guid? ProcessingId { get; set; }
     //public Guid? ProcessOrderRequestId { get; set; }
 
-    //public Guid? RequestId { get; set; }
-    //public Uri? ResponseAddress { get; set; }
-    //public Guid? OrderId { get; set; }
+    public Guid? RequestId { get; set; }
+    public Uri? ResponseAddress { get; set; }
+    public Guid OrderId { get; set; }
 
     //public Guid? OrderCompletionTimeoutTokenId { get; set; }
 

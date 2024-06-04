@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Queue.Contracts;
 using Shared.Queue.Events;
 using Shared.Queue.Requests;
+using Shared.Queue.Saga.Contracts;
 
 namespace DotnetMassTransitApp.Patterns.Saga.Producer.Controllers;
 
@@ -83,11 +84,30 @@ public class ValuesController : ControllerBase
     {
         try
         {
-            var message = new RequestOrderCancellation() { OrderId = new Guid("7955408b-6142-4d1f-9a96-510c82699ee9") };
-            var response = await _cancelOrderRequestClient.GetResponse<RequestOrderCancellation, OrderNotFound>(
+            // V1
+
+            //var message = new RequestOrderCancellation() { OrderId = new Guid("7955408b-6142-4d1f-9a96-510c82699ee9") };
+            //var response = await _cancelOrderRequestClient.GetResponse<RequestOrderCancellation, OrderNotFound>(
+            //    message: message);
+
+            //if (response.Is(out Response<RequestOrderCancellation> canceled))
+            //{
+            //    return Ok();
+            //}
+            //else if (response.Is(out Response<OrderNotFound> responseB))
+            //{
+            //    return NotFound();
+            //}
+
+            //return BadRequest();
+
+            // V2
+
+            var message = new RequestOrderCancellation() { OrderId = new Guid("2fe4c617-e36f-4d4a-b413-a95c08338f50") };
+            var response = await _cancelOrderRequestClient.GetResponse<RequestOrderCancellation, OrderNotFound, OrderCanceled>(
                 message: message);
 
-            if (response.Is(out Response<RequestOrderCancellation> canceled))
+            if (response.Is(out Response<OrderCanceled> canceled))
             {
                 return Ok();
             }
@@ -114,6 +134,21 @@ public class ValuesController : ControllerBase
         new OrderCompleted()
         {
             OrderId = orderId
+        });
+
+        return Ok();
+    }
+
+    [HttpGet("create-order")]
+    public async Task<IActionResult> CreateOrderMethod()
+    {
+        var correlationId = Guid.NewGuid();
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new("queue:create-order"));
+        
+        await endpoint.Send<CreateOrder>(
+        new CreateOrder()
+        {
+            CorrelationId = correlationId
         });
 
         return Ok();

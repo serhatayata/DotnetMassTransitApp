@@ -12,8 +12,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMassTransit(mt =>
 {
-    mt.AddConsumer<OrderSubmittedConsumer>();
+    //mt.AddConsumer<OrderSubmittedConsumer>();
     mt.AddConsumer<UpdateAccountHistoryConsumer>();
+    mt.AddConsumer<ProcessOrderConsumer>();
 
     mt.UsingRabbitMq((cntx, cfg) =>
     {
@@ -23,11 +24,23 @@ builder.Services.AddMassTransit(mt =>
 
         // Fanout exchange consumer
 
-        cfg.ReceiveEndpoint(queueName: "order-submitted", ep =>
-        {
-            ep.ConfigureConsumer<OrderSubmittedConsumer>(cntx);
+        //cfg.ReceiveEndpoint(queueName: "order-submitted", ep =>
+        //{
+        //    ep.ConfigureConsumer<OrderSubmittedConsumer>(cntx);
 
-            ep.Bind(exchangeName: "order-submitted-exchange", clb =>
+        //    ep.Bind(exchangeName: "order-submitted-exchange", clb =>
+        //    {
+        //        clb.ExchangeType = "fanout";
+        //        clb.AutoDelete = false;
+        //        clb.Durable = true;
+        //    });
+        //});
+
+        cfg.ReceiveEndpoint(queueName: "update-account-history", ep =>
+        {
+            ep.ConfigureConsumer<UpdateAccountHistoryConsumer>(cntx);
+
+            ep.Bind(exchangeName: "update-account-history-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
                 clb.AutoDelete = false;
@@ -35,11 +48,11 @@ builder.Services.AddMassTransit(mt =>
             });
         });
 
-        cfg.ReceiveEndpoint(queueName: "update-account-history", ep =>
+        cfg.ReceiveEndpoint(queueName: "process-order", ep =>
         {
-            ep.ConfigureConsumer<UpdateAccountHistoryConsumer>(cntx);
+            ep.ConfigureConsumer<ProcessOrderConsumer>(cntx);
 
-            ep.Bind(exchangeName: "update-account-history-exchange", clb =>
+            ep.Bind(exchangeName: "process-order-exchange", clb =>
             {
                 clb.ExchangeType = "fanout";
                 clb.AutoDelete = false;

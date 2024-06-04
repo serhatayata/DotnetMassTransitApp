@@ -2,7 +2,7 @@
 using Shared.Queue.Contracts;
 using Shared.Queue.Events;
 
-namespace DotnetMassTransitApp.Patterns.Saga.StateMachine;
+namespace DotnetMassTransitApp.Patterns.Saga.Consumer.Consumers;
 
 public class ProcessOrderConsumer : IConsumer<ProcessOrder>
 {
@@ -10,7 +10,7 @@ public class ProcessOrderConsumer : IConsumer<ProcessOrder>
     {
         await context.RespondAsync(new OrderProcessed()
         {
-            OrderId = context.Message.OrderId, 
+            OrderId = context.Message.OrderId,
             ProcessingId = context.Message.ProcessingId
         });
     }

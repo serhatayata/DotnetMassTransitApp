@@ -30,6 +30,9 @@ builder.Services.AddMassTransit(x =>
                     m.MigrationsHistoryTable($"__{nameof(OrderStateDbContext)}");
                 });
             });
+
+            cfg.LockStatementProvider = new SqlServerLockStatementProvider();
+            cfg.ConcurrencyMode = ConcurrencyMode.Pessimistic;
         });
 
     x.UsingRabbitMq((context, cfg) =>
@@ -37,6 +40,11 @@ builder.Services.AddMassTransit(x =>
         var rabbitmqConn = configuration.GetConnectionString("RabbitMQ");
 
         cfg.Host(rabbitmqConn);
+
+        cfg.Message<ProcessOrder>(x =>
+        {
+            x.SetEntityName("process-order-exchange");
+        });
 
         cfg.ReceiveEndpoint("submit-order", r =>
         {
@@ -63,16 +71,9 @@ builder.Services.AddMassTransit(x =>
             r.ConfigureSaga<OrderState>(context);
         });
 
-        cfg.Message<OrderSubmitted>(x =>
+        cfg.ReceiveEndpoint("create-order", r =>
         {
-            x.SetEntityName("order-submitted-exchange");
-        });
-
-        cfg.Publish<OrderSubmitted>(opt =>
-        {
-            opt.ExchangeType = "fanout";
-            opt.AutoDelete = false;
-            opt.Durable = true;
+            r.ConfigureSaga<OrderState>(context);
         });
     });
 });
